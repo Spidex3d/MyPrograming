@@ -41,3 +41,18 @@ Useful beginners information
   return 0;
 }
   ```
+
+```
+#include <iostream>
+#include <string>
+
+
+int main() {
+	std::string name;
+	std::cout << "Hello, from your first project!" << std::endl;
+	std::cout << "What's your name" << std::endl;
+	std::getline(std::cin, name); // get user input including spaces
+	std::cout << "Hello, " << name << " Welcome to C++" << std::endl;
+	return 0;
+}
+```
