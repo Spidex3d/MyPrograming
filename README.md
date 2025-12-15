@@ -26,6 +26,9 @@ Useful beginners information
 */
 
  ctrl + alt + L Open solution explorer.
+ 
  ctrl + D Duplicate a line or selection.
+ 
  ctrl + F Open find dialog.
+ 
  Hold down Alt and drag to create a rectangular selection.
