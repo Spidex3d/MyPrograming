@@ -33,11 +33,11 @@ Useful beginners information
  
  Hold down Alt and drag to create a rectangular selection.
 
- '''
+ ```
  #include <iostream>
 
  int main() {
   std::cout << "Hello World!" << std::endl;
   return 0;
 }
-  '''
+  ```
