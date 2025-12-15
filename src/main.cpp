@@ -1,4 +1,17 @@
 #include <iostream>
+#include <string>
+//using namespace std; // use the standard namespace to avoid prefixing std::
+
+
+int main() { // main is the entry point for every C++ program
+	std::string name; // declare a variable to hold the user's name
+	std::cout << "Hello, from your first project" << std::endl;
+	std::cout << "What's your name" << std::endl;
+	std::getline(std::cin, name); // get the user's name from standard input
+	std::cout << "Hello " << name << ", welcome to C++ programming!" << std::endl;
+	return 0;
+}
+
 /* introductory comments
 * Why am i making this series?  to show how I am teaching myself C++ over the last 18 months.
 * C++ is a grate hobby langauge for older learners.
@@ -19,7 +32,7 @@ A Slow & Clear C++ series aimed at older learners & pensioners (or anyone who pr
  If this helped, please subscribe — I will upload slow, gentle lessons as often as I can.
 */
 
-// This is comment style number 1
+// This is comment style number 1 for single line comments
 /*This is comment style number 2
    It can span multiple lines
 */
@@ -29,7 +42,4 @@ A Slow & Clear C++ series aimed at older learners & pensioners (or anyone who pr
 // ctrl + F Open find dialog
 // Hold down Alt and drag to create a rectangular selection
 
-int main() { // main is the entry point for every C++ program
-	std::cout << "Hello, from your first project" << std::endl;
-	return 0;
-}
+// alt to move lines up and down
