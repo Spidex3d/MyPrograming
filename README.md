@@ -19,12 +19,13 @@ A Slow & Clear C++ series aimed at older learners & pensioners (or anyone who pr
 
 Useful beginners information
 
-// This is comment style number 1 for single line comments
+// This is comment style number 1 for single line comments.
+
 /*This is comment style number 2
    It can span multiple lines
 */
 
- ctrl + alt + L Open solution explorer
- ctrl + D Duplicate a line or selection
- ctrl + F Open find dialog
- Hold down Alt and drag to create a rectangular selection
+ ctrl + alt + L Open solution explorer.
+ ctrl + D Duplicate a line or selection.
+ ctrl + F Open find dialog.
+ Hold down Alt and drag to create a rectangular selection.
