@@ -13,8 +13,8 @@ A Slow & Clear C++ series aimed at older learners & pensioners (or anyone who pr
  installing visual studio community edition is the first step
  first thing is to set show all folders in solution explorer and explain about filters vs folders
  Next crate a new folder called src
- next create a new cpp file inside src called main.cpp by right clicking src and selecting add new item
- change font size to 16 in tools -> options -> environment -> fonts and colors
+ next create a new cpp file inside src called main.cpp by right clicking src and selecting add new item. 
+ Change font size to 16 in tools -> options -> environment -> fonts and colors
  If this helped, please subscribe — I will upload slow, gentle lessons as often as I can.
 
 Useful beginners information
