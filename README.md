@@ -32,7 +32,7 @@ Useful beginners information
  ctrl + F Open find dialog.
  
  Hold down Alt and drag to create a rectangular selection.
-
+Lesson 1
  ```
  #include <iostream>
 
@@ -41,7 +41,7 @@ Useful beginners information
   return 0;
 }
   ```
-
+Lesson 2
 ```
 #include <iostream>
 #include <string>
