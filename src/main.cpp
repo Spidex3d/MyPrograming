@@ -1,14 +1,28 @@
 #include <iostream>
 #include <string>
 //using namespace std; // use the standard namespace to avoid prefixing std::
-
+// variable declarations
+//global variable
+short year; // a short integer variable 2 bytes
+long population; // a long integer variable 4 bytes
+long long distance; // a long long integer variable 8 bytes
+double pi; // a double precision floating point variable 8 bytes 3.14159
 
 int main() { // main is the entry point for every C++ program
+	int age = 68; //  - 2b + 2b give or take a bit
+	char key = 'A'; // a single character variable 1 byte you add a char in single quotes like 'A' or number '50'
+	float position = 5.5f; // a floating point variable 4 bytes 5.5f no f for double
+	bool isRunning = true; // a boolean variable 1 byte true or false 1 or 0 yes or no
+
 	std::string name; // declare a variable to hold the user's name
+	
 	std::cout << "Hello, from your first project" << std::endl;
 	std::cout << "What's your name" << std::endl;
 	std::getline(std::cin, name); // get the user's name from standard input
-	std::cout << "Hello " << name << ", welcome to C++ programming!" << std::endl;
+	std::cout << "Hello " << name << ", your age is " << age << std::endl;
+	std::cout << "key was " << key << std::endl;
+	std::cout << "position is " << position << std::endl;
+	std::cout << "is it running " << isRunning << std::endl;
 	return 0;
 }
 
