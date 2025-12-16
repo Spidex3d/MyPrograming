@@ -8,22 +8,29 @@ long population; // a long integer variable 4 bytes
 long long distance; // a long long integer variable 8 bytes
 double pi; // a double precision floating point variable 8 bytes 3.14159
 
-int main() { // main is the entry point for every C++ program
-	int age = 68; //  - 2b + 2b give or take a bit
-	char key = 'A'; // a single character variable 1 byte you add a char in single quotes like 'A' or number '50'
-	float position = 5.5f; // a floating point variable 4 bytes 5.5f no f for double
-	bool isRunning = true; // a boolean variable 1 byte true or false 1 or 0 yes or no
+int multi(int a, int b) { // function to add two integers and return the result
+	return a * b;
+}
+// OR
+void multiVoid(int a, int b) { // function to add two integers and return the result via reference
+	int result = multi(a, b); // local variable 
+	std::cout << "Result is " << result << std::endl;
+}
 
-	std::string name; // declare a variable to hold the user's name
+int main() { // main is the entry point for every C++ program
+	int result = multi(3, 5); // local variable 
+	std::cout << "3 multiplied by 5 is " << result << std::endl;
+
+	int result1 = multi(4, 5); // local variable 
+	std::cout << "4 multiplied by 5 is " << result1 << std::endl;
+
+	int result2 = multi(6, 5); // local variable 
+	std::cout << "6 multiplied by 5 is " << result2 << std::endl;
+
+	multiVoid(3, 5); // call the void function
+	multiVoid(4, 5); // call the void function
+	multiVoid(6, 5); // call the void function
 	
-	std::cout << "Hello, from your first project" << std::endl;
-	std::cout << "What's your name" << std::endl;
-	std::getline(std::cin, name); // get the user's name from standard input
-	std::cout << "Hello " << name << ", your age is " << age << std::endl;
-	std::cout << "key was " << key << std::endl;
-	std::cout << "position is " << position << std::endl;
-	std::cout << "is it running " << isRunning << std::endl;
-	return 0;
 }
 
 /* introductory comments
@@ -57,3 +64,23 @@ A Slow & Clear C++ series aimed at older learners & pensioners (or anyone who pr
 // Hold down Alt and drag to create a rectangular selection
 
 // alt to move lines up and down
+
+/* Lesson 3
+// 4 primitive variable declarations the most common ones used
+	int age = 68; //  - 2b + 2b give or take a bit
+	unsigned int score = 5000; // only positive whole numbers 0 to 4b
+	char key = '65'; // a single character variable 1 byte you add a char in single quotes like 'A' or number '50'
+	float position = 5.5f; // a floating point variable 4 bytes 5.5f no f for double
+	bool isRunning = true; // a boolean variable 1 byte true or false 1 or 0 yes or no
+
+	std::string name; // declare a variable to hold the user's name
+
+	std::cout << "Hello, from your first project" << std::endl;
+	std::cout << "What's your name" << std::endl;
+	std::getline(std::cin, name); // get the user's name from standard input
+	std::cout << "Hello " << name << ", your age is " << age << std::endl;
+	std::cout << "key was " << key << std::endl;
+	std::cout << "position is " << position << std::endl;
+	std::cout << "is it running " << isRunning << std::endl;
+	return 0;
+*/
