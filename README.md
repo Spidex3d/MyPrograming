@@ -57,3 +57,25 @@ int main() {
 	return 0;
 }
 ```
+Lesson 3
+```
+#include <iostream>
+#include <string>
+
+int main() {
+	int age = 68; // integer variable
+	char key = 'A'; // character variable
+	float position = 1.5f; // floating point variable
+	bool isRunning = false; // boolean variable
+
+	std::string name;
+	std::cout << "Hello, from your first project!" << std::endl;
+	std::cout << "What's your name" << std::endl;
+	std::getline(std::cin, name); // get user input including spaces
+	std::cout << "Hello, " << name << " your age is " << age << std::endl;
+	std::cout << "Key is " << key << std::endl;
+	std::cout << "Your position is " << position << std::endl; // added line for position
+	std::cout << " isRunning " << isRunning << std::endl; // added line for position
+	return 0;
+}
+```
