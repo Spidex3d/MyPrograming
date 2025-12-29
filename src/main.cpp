@@ -1,37 +1,79 @@
-#include <iostream>
-#include <string>
+#include "../header/log.h"
+#include "../header/mylog.h"
+// hashinclude is a preprocessor directive that tells the compiler to include the contents of a file or library
+class Player
+{
+public: // public members can be accessed from outside the class
+	int xPos, yPos; // x - y position
+	int health;		// health points
+	int score;		// player score
+	int speed;		// movement speed
+
+};
+
+int main() { // main is the entry point for every C++ program
+	// Player is an object type
+	Player player1; // create an instance of the object Player class
+	player1.xPos = 10; // set x position
+	player1.yPos = 20; // set y position
+	player1.health = 100; // set health
+	player1.score = 0; // set score
+	player1.speed = 5; // set speed
+
+	myLog("Player1 position: (" + std::to_string(player1.xPos) + ", " + std::to_string(player1.yPos) + ")");
+	myLog("Player1 health: " + std::to_string(player1.health));
+	myLog("Player1 score: " + std::to_string(player1.score));
+	myLog("Player1 speed: " + std::to_string(player1.speed));
+	
+
+
+
+	int testVar = 42; // local variable
+	LOG_WARNING("This is a warning message " << testVar); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
+
+	myLog("Hello, from your first project");
+	std::string name; // declare a variable to hold the user's name
+	myLog("What's your name");
+	std::getline(std::cin, name); // get the user's name from standard input
+	myLog("Hello " + name + ", welcome to C++ programming!");
+	return 0;
+}
+
+
+
+
 //using namespace std; // use the standard namespace to avoid prefixing std::
 // variable declarations
 //global variable
-short year; // a short integer variable 2 bytes
-long population; // a long integer variable 4 bytes
-long long distance; // a long long integer variable 8 bytes
-double pi; // a double precision floating point variable 8 bytes 3.14159
-
-int multi(int a, int b) { // function to add two integers and return the result
-	return a * b;
-}
-// OR
-void multiVoid(int a, int b) { // function to add two integers and return the result via reference
-	int result = multi(a, b); // local variable 
-	std::cout << "Result is " << result << std::endl;
-}
-
-int main() { // main is the entry point for every C++ program
-	int result = multi(3, 5); // local variable 
-	std::cout << "3 multiplied by 5 is " << result << std::endl;
-
-	int result1 = multi(4, 5); // local variable 
-	std::cout << "4 multiplied by 5 is " << result1 << std::endl;
-
-	int result2 = multi(6, 5); // local variable 
-	std::cout << "6 multiplied by 5 is " << result2 << std::endl;
-
-	multiVoid(3, 5); // call the void function
-	multiVoid(4, 5); // call the void function
-	multiVoid(6, 5); // call the void function
-	
-}
+//short year; // a short integer variable 2 bytes
+//long population; // a long integer variable 4 bytes
+//long long distance; // a long long integer variable 8 bytes
+//double pi; // a double precision floating point variable 8 bytes 3.14159
+//
+//int multi(int a, int b) { // function to add two integers and return the result
+//	return a * b;
+//}
+//// OR
+//void multiVoid(int a, int b) { // function to add two integers and return the result via reference
+//	int result = multi(a, b); // local variable 
+//	std::cout << "Result is " << result << std::endl;
+//}
+//
+//int main() { // main is the entry point for every C++ program
+//	int result = multi(3, 5); // local variable 
+//	std::cout << "3 multiplied by 5 is " << result << std::endl;
+//
+//	int result1 = multi(4, 5); // local variable 
+//	std::cout << "4 multiplied by 5 is " << result1 << std::endl;
+//
+//	int result2 = multi(6, 5); // local variable 
+//	std::cout << "6 multiplied by 5 is " << result2 << std::endl;
+//
+//	multiVoid(3, 5); // call the void function
+//	multiVoid(4, 5); // call the void function
+//	multiVoid(6, 5); // call the void function
+//	
+//}
 
 /* introductory comments
 * Why am i making this series?  to show how I am teaching myself C++ over the last 18 months.
