@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b7207286-808a-4817-80a7-71e3fd890d68}</ProjectGuid>
-    <RootNamespace>Logging</RootNamespace>
+    <ProjectGuid>{ecdee0eb-d777-4faf-84c7-d62a5ce05e03}</ProjectGuid>
+    <RootNamespace>ClassStruct</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\logging.cpp" />
+    <ClCompile Include="src\class.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
