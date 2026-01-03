@@ -44,15 +44,17 @@ int main() { // main is the entry point for every C++ program
 	int testVar = 42; // local variable
 	LOG_WARNING("This is a warning message " << testVar); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
 
-	myLog("Hello, from your first project");
-	std::string name; // declare a variable to hold the user's name
-	myLog("What's your name");
-	std::getline(std::cin, name); // get the user's name from standard input
-	myLog("Hello " + name + ", welcome to C++ programming!");
+	myLog("Hello, from your Class and Struct project");
+	
 	return 0;
 }
 
 
+
+//std::string name; // declare a variable to hold the user's name
+//myLog("What's your name");
+//std::getline(std::cin, name); // get the user's name from standard input
+//myLog("Hello " + name + ", welcome to C++ programming!");
 
 
 //using namespace std; // use the standard namespace to avoid prefixing std::
