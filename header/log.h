@@ -2,8 +2,10 @@
 #include <iostream>
 #include <sstream>
 /*
-A macro is a preprocessor substitution : a rule the C++ preprocessor applies before the compiler runs.Macros are written with #define and the preprocessor replaces occurrences in your source with the macro body(textual substitution), so the compiler never sees the original macro name.
 Quick outline
+A macro is a preprocessor substitution : a rule the C++ preprocessor applies before the compiler runs.
+Macros are written with #define and the preprocessor replaces occurrences in your source with the macro body(textual substitution),
+so the compiler never sees the original macro name.
 
 What it is
 A compile - time text replacement performed by the preprocessor(not the compiler).
@@ -12,14 +14,15 @@ Useful for constants, conditional compilation, short inline code snippets, and p
 Object - like macro :
 
 C++
-How to define
+How to define a macro
 #define PI 3.14159 
 Anywhere PI appears it is replaced with 3.14159.
 
 */
 
 // an enum is a user-defined type consisting of a set of named integral constants
-enum LOG_LEVEL {
+// which makes code more readable and maintainable
+enum LOG_LEVEL {    // Enum values are basically integers.
 	LOG_LEVEL_INIT      = 0,        // set initialization level to 0
 	LOG_LEVEL_ERROR     = 1,        // set error level to 1
 	LOG_LEVEL_WARNING   = 2,        // set warning level to 2
@@ -40,13 +43,13 @@ enum LOG_LEVEL {
 #define COLOR_GREEN     "\x1b[32m"    // Green color
 #define COLOR_CYAN      "\x1b[36m"    // Cyan color
 #define COLOR_BLUE      "\x1b[34m"     // Blue color
-
+// Set active log level based on build configuration
 #ifdef _DEBUG
 #ifndef LOG_LEVEL_ACTIVE
 #define LOG_LEVEL_ACTIVE LOG_LEVEL_DEBUG
 #endif
 
-
+// Function-like macro to get color code based on log level
 #define LOG_COLOR(level) \
         ((level) == LOG_LEVEL_INIT ?    COLOR_GREEN : \
          (level) == LOG_LEVEL_ERROR ?   COLOR_RED : \
@@ -55,36 +58,28 @@ enum LOG_LEVEL {
          (level) == LOG_LEVEL_TRACE ?   COLOR_CYAN : \
          COLOR_BLUE)
 
-// Internal macro for logging with level and color
-//#define LOG(level, level_name, ...) do { \
-//        if ((level) <= LOG_LEVEL_ACTIVE) { \
-//            std::ostringstream myLog_log_stream; \
-//            myLog_log_stream << __VA_ARGS__; \
-//            std::cout << LOG_COLOR(level) \
-//                      << "[LOG][" << level_name << "] " << myLog_log_stream.str() \
-//                      << COLOR_RESET << std::endl; \
-//        } \
-//    } while (0)
 
-#define LOG_CONCAT_IMPL(a, b) a##b
-#define LOG_CONCAT(a, b) LOG_CONCAT_IMPL(a, b)
-
+#define LOG_CONCAT_IMPL(a, b) a##b // helper macro to concatenate tokens
+#define LOG_CONCAT(a, b) LOG_CONCAT_IMPL(a, b) // macro to concatenate tokens with expansion
+// Generic logging macro that handles different log levels and message formatting 
 #define LOG(level, level_name, ...) do { \
-    /* cache level once */ \
+    /* Cache the evaluated `level` once in a temporary whose name includes the source line. */ \
     auto LOG_CONCAT(_log_lv_, __LINE__) = (level); \
+    /* Only proceed if the message level is allowed by the active log level. */ \
     if (LOG_CONCAT(_log_lv_, __LINE__) <= LOG_LEVEL_ACTIVE) { \
-        /* unique stream name per expansion */ \
+        /* Create a per-call std::ostringstream with a unique name to collect the message. */ \
         std::ostringstream LOG_CONCAT(_log_stream_, __LINE__); \
+        /* Stream the user-provided variadic arguments into the stringstream. */ \
         LOG_CONCAT(_log_stream_, __LINE__) << __VA_ARGS__; \
+        /* Print color, prefix, the composed message, then reset color and end the line. */ \
         std::cout << LOG_COLOR(LOG_CONCAT(_log_lv_, __LINE__)) \
                   << "[LOG][" << (level_name) << "] " \
                   << LOG_CONCAT(_log_stream_, __LINE__).str() \
                   << COLOR_RESET << std::endl; \
     } \
-} while (0)
+} while (0) 
 
-
-//#define GLWIN_LOG_INIT(x) std::cout << x << std::endl
+//in Debug: macros log messages
 #define LOG_INIT(...)    LOG(LOG_LEVEL_INIT,    "INIT", __VA_ARGS__)
 #define LOG_ERROR(...)   LOG(LOG_LEVEL_ERROR,   "ERROR", __VA_ARGS__)
 #define LOG_WARNING(...) LOG(LOG_LEVEL_WARNING, "WARN", __VA_ARGS__)
@@ -93,7 +88,7 @@ enum LOG_LEVEL {
 #define LOG_DEBUG(...)   LOG(LOG_LEVEL_DEBUG,   "DEBUG", __VA_ARGS__)
 
 #else
-// In release: macros do nothing
+// In release: macros do nothing ie; no logging to the console
 #define LOG_INIT(x)
 #define LOG_ERROR(...)
 #define LOG_WARNING(...)
@@ -101,3 +96,22 @@ enum LOG_LEVEL {
 #define LOG_TRACE(...)
 #define LOG_DEBUG(...)
 #endif
+
+/*An enum (enumeration) is a user-defined type that names a set of related constant integer values.
+Use enums to give meaningful names to integer choices (states, modes, error codes, log levels, flags),
+make code easier to read, and reduce bugs caused by using raw numbers.
+*/
+
+// Usage summary:
+//   LOG(level, "NAME", "text=", x, ", more") ; // streams the variadic args into a single message
+//
+// Behavior summary:
+// - Caches the evaluated `level` expression once to avoid double-evaluation.
+// - Builds the message using a local std::ostringstream (so streaming operators << work).
+// - Prints a colored, prefixed log line only when the cached level <= LOG_LEVEL_ACTIVE.
+// - Uses __LINE__ to create (usually) unique temporary variable names per source line so
+//   multiple LOG invocations in the same scope don't collide.
+// - The whole macro is wrapped in do { ... } while (0) so it behaves like a single statement
+//   (safe to use after if without braces).
+//
+
