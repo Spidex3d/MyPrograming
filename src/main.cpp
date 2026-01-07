@@ -1,5 +1,6 @@
 #include "../header/log.h"
 #include "../header/mylog.h"
+
 // hashinclude is a preprocessor directive that tells the compiler to include the contents of a file or library
 
 //struct Player
@@ -9,6 +10,9 @@
 //	int health;		// health points
 //	int score;		// player score
 //	int speed;		// movement speed
+// int level;		// player level
+// int countdown;
+// 
 //};
 
 class Player
@@ -19,6 +23,9 @@ public: // public members can be accessed from outside the class visibly
 	int health;		// health points
 	int score;		// player score
 	int speed;		// movement speed
+	int level;		// player level
+	int countdown;
+
 
 };
 
@@ -31,17 +38,71 @@ int main() { // main is the entry point for every C++ program
 	player1.health = 100;	// set health
 	player1.score = 0;		// set score
 	player1.speed = 5;		// set speed
+	player1.level = 1;      // set level
+	player1.countdown = 5;  // set countdown
 
 	myLog("Player1 position: (" + std::to_string(player1.xPos) + ", " + std::to_string(player1.yPos) + ")");
 	myLog("Player1 health: " + std::to_string(player1.health));
 	myLog("Player1 score: " + std::to_string(player1.score));
 	myLog("Player1 speed: " + std::to_string(player1.speed));
-	
-	Player player2;			// create another instance of the object Player class
-	player2.xPos = 30;		// set x position and so on
 
+	// A conditional statement to check if player1 is alive or dead, > more than 0 is alive
+	// Add a brake point on the next line to pause execution and inspect variables
+	if (player1.health > 0) {
+		LOG_INFO("Player1 is alive");
+	}
+	else {
+		LOG_WARNING("Player1 is dead");
+	}
+	bool colourGreen = true; // boolean variable to indicate if the color is green
+	// add a ! to the front of colourGreen to test the else condition
+	if (colourGreen) {
+		LOG_INFO("The color is Red");
+	}
+	else {
+		LOG_WARNING("The color is not Red");
+	}
+	// switch statement example to check player level
+	switch (player1.level) {
+	case 0:
+		LOG_INFO("Level is zero");
+		break;
+	case 1:
+		LOG_INFO("Level is one");
+		break;
+	case 2:
+		LOG_INFO("Level is two");
+		break;
+	}
+
+	
+	// while loop example to count down from 5
+	while (player1.countdown > 0) {
+		LOG_INFO("Countdown: " << player1.countdown);
+		player1.countdown--;
+	}
+	// when countdown reaches 0 move to next line of code
+	LOG_INFO("Start game at level: " << player1.level);
+
+	int i = 0; // local variable for do while loop set to 0
+	// do while loop example to count up to 5
+	do {
+		LOG_INFO("Game will Start in: " << i);
+		i++; // increment i by 1 each loop iteration
+	}
+	// condition is checked after the loop body is executed
+	while (i < 5);
+
+	// for loop example to count down from 5
+	for (int i = 5; i > 0; i--) {
+		LOG_INFO("count down from 5: " << i);
+	}
+	
+
+	
 
 	int testVar = 42; // local variable
+	LOG_INFO("This is the players Speed " << std::to_string(player1.speed)); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
 	LOG_WARNING("This is a warning message " << testVar); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
 
 	myLog("Hello, from your Class and Struct project");

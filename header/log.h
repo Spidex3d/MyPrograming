@@ -18,6 +18,10 @@ How to define a macro
 #define PI 3.14159 
 Anywhere PI appears it is replaced with 3.14159.
 
+TO DO
+Add timestamp to each log entry
+Add file logging to a file like errors.log
+
 */
 
 // an enum is a user-defined type consisting of a set of named integral constants
