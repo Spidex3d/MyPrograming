@@ -1,7 +1,66 @@
 #include "../header/log.h"
 #include "../header/mylog.h"
+#include <GLFW/glfw3.h> // include the GLFW header file
 
-// hashinclude is a preprocessor directive that tells the compiler to include the contents of a file or library
+// our first C++ program with external library GLFW to create a window
+// Ok we are going to use our first external library in this project
+// what is glfw - graphics library framework for creating windows with OpenGL contexts and managing input and events
+
+// go to properties of the project and set the include directory to point to the glfw include folder
+// go to properties of the project and set the linker input additional dependencies to include glfw3.lib and opengl32.lib
+// also set the library directory to point to the glfw lib folder
+// set the latest c++ standard in project properties to c++20
+
+// GLFW https://www.glfw.org/
+// glad https://glad.dav1d.de/
+
+int main() { // main is the entry point for every C++ program
+	LOG_INFO("Hello, Let's open a window with GLFW");
+
+    GLFWwindow* window;
+
+    /* Initialize the library */
+    if (!glfwInit())
+        return false;
+
+    /* Create a windowed mode window and its OpenGL context */
+    window = glfwCreateWindow(640, 480, "My first window", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return false;
+    }
+    else {
+		LOG_INFO("GLFW window created successfully");
+    }
+
+    /* Make the window's context current */
+    glfwMakeContextCurrent(window);
+
+    /* Loop until the user closes the window */
+    while (!glfwWindowShouldClose(window))
+    {
+        // Render here 
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Swap front and back buffers 
+        glfwSwapBuffers(window);
+
+        // Poll for and process events
+        glfwPollEvents();
+    }
+
+    LOG_INFO("Closing our GLFW window");
+    glfwTerminate();
+	
+	
+	return 0;
+}
+
+
+
+
+
 
 //struct Player
 //{
@@ -15,101 +74,95 @@
 // 
 //};
 
-class Player
-{
-	// class are private by default
-public: // public members can be accessed from outside the class visibly
-	int xPos, yPos; // x - y position
-	int health;		// health points
-	int score;		// player score
-	int speed;		// movement speed
-	int level;		// player level
-	int countdown;
+//class Player
+//{
+//	// class are private by default
+//public: // public members can be accessed from outside the class visibly
+//	int xPos, yPos; // x - y position
+//	int health;		// health points
+//	int score;		// player score
+//	int speed;		// movement speed
+//	int level;		// player level
+//	int countdown;
+//
+//
+//};
 
 
-};
+//Player player1;			// create an instance of the object Player class
+//player1.xPos = 10;		// set x position
+//player1.yPos = 20;		// set y position
+//player1.health = 100;	// set health
+//player1.score = 0;		// set score
+//player1.speed = 5;		// set speed
+//player1.level = 1;      // set level
+//player1.countdown = 5;  // set countdown
 
+//myLog("Player1 position: (" + std::to_string(player1.xPos) + ", " + std::to_string(player1.yPos) + ")");
+//myLog("Player1 health: " + std::to_string(player1.health));
+//myLog("Player1 score: " + std::to_string(player1.score));
+//myLog("Player1 speed: " + std::to_string(player1.speed));
 
-int main() { // main is the entry point for every C++ program
-	// Player is an object type
-	Player player1;			// create an instance of the object Player class
-	player1.xPos = 10;		// set x position
-	player1.yPos = 20;		// set y position
-	player1.health = 100;	// set health
-	player1.score = 0;		// set score
-	player1.speed = 5;		// set speed
-	player1.level = 1;      // set level
-	player1.countdown = 5;  // set countdown
+//// A conditional statement to check if player1 is alive or dead, > more than 0 is alive
+//// Add a brake point on the next line to pause execution and inspect variables
+//if (player1.health > 0) {
+//	LOG_INFO("Player1 is alive");
+//}
+//else {
+//	LOG_WARNING("Player1 is dead");
+//}
+//bool colourGreen = true; // boolean variable to indicate if the color is green
+//// add a ! to the front of colourGreen to test the else condition
+//if (colourGreen) {
+//	LOG_INFO("The color is Red");
+//}
+//else {
+//	LOG_WARNING("The color is not Red");
+//}
+//// switch statement example to check player level
+//switch (player1.level) {
+//case 0:
+//	LOG_INFO("Level is zero");
+//	break;
+//case 1:
+//	LOG_INFO("Level is one");
+//	break;
+//case 2:
+//	LOG_INFO("Level is two");
+//	break;
+//}
 
-	myLog("Player1 position: (" + std::to_string(player1.xPos) + ", " + std::to_string(player1.yPos) + ")");
-	myLog("Player1 health: " + std::to_string(player1.health));
-	myLog("Player1 score: " + std::to_string(player1.score));
-	myLog("Player1 speed: " + std::to_string(player1.speed));
+//
+//// while loop example to count down from 5
+//while (player1.countdown > 0) {
+//	LOG_INFO("Countdown: " << player1.countdown);
+//	player1.countdown--;
+//}
+//// when countdown reaches 0 move to next line of code
+//LOG_INFO("Start game at level: " << player1.level);
 
-	// A conditional statement to check if player1 is alive or dead, > more than 0 is alive
-	// Add a brake point on the next line to pause execution and inspect variables
-	if (player1.health > 0) {
-		LOG_INFO("Player1 is alive");
-	}
-	else {
-		LOG_WARNING("Player1 is dead");
-	}
-	bool colourGreen = true; // boolean variable to indicate if the color is green
-	// add a ! to the front of colourGreen to test the else condition
-	if (colourGreen) {
-		LOG_INFO("The color is Red");
-	}
-	else {
-		LOG_WARNING("The color is not Red");
-	}
-	// switch statement example to check player level
-	switch (player1.level) {
-	case 0:
-		LOG_INFO("Level is zero");
-		break;
-	case 1:
-		LOG_INFO("Level is one");
-		break;
-	case 2:
-		LOG_INFO("Level is two");
-		break;
-	}
+//int i = 0; // local variable for do while loop set to 0
+//// do while loop example to count up to 5
+//do {
+//	LOG_INFO("Game will Start in: " << i);
+//	i++; // increment i by 1 each loop iteration
+//}
+//// condition is checked after the loop body is executed
+//while (i < 5);
 
-	
-	// while loop example to count down from 5
-	while (player1.countdown > 0) {
-		LOG_INFO("Countdown: " << player1.countdown);
-		player1.countdown--;
-	}
-	// when countdown reaches 0 move to next line of code
-	LOG_INFO("Start game at level: " << player1.level);
+//// for loop example to count down from 5
+//for (int i = 5; i > 0; i--) {
+//	LOG_INFO("count down from 5: " << i);
+//}
+//
 
-	int i = 0; // local variable for do while loop set to 0
-	// do while loop example to count up to 5
-	do {
-		LOG_INFO("Game will Start in: " << i);
-		i++; // increment i by 1 each loop iteration
-	}
-	// condition is checked after the loop body is executed
-	while (i < 5);
+//
 
-	// for loop example to count down from 5
-	for (int i = 5; i > 0; i--) {
-		LOG_INFO("count down from 5: " << i);
-	}
-	
+//int testVar = 42; // local variable
+//LOG_INFO("This is the players Speed " << std::to_string(player1.speed)); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
+//LOG_WARNING("This is a warning message " << testVar); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
 
-	
-
-	int testVar = 42; // local variable
-	LOG_INFO("This is the players Speed " << std::to_string(player1.speed)); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
-	LOG_WARNING("This is a warning message " << testVar); // __VA_ARGS__ is a special macro that represents all the arguments passed to the macro
-
-	myLog("Hello, from your Class and Struct project");
-	
-	return 0;
-}
-
+//myLog("Hello, from your Class and Struct project");
 
 
 //std::string name; // declare a variable to hold the user's name
