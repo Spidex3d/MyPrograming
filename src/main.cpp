@@ -1,10 +1,12 @@
 #include "../header/log.h"
 #include "../header/mylog.h"
+#include "glad\glad.h" // include the glad header file
 #include <GLFW/glfw3.h> // include the GLFW header file
-
-// our first C++ program with external library GLFW to create a window
-// Ok we are going to use our first external library in this project
-// what is glfw - graphics library framework for creating windows with OpenGL contexts and managing input and events
+// Ok so this one will be a bit longer because
+// we are make our first C++ program with an external library GLFW to create a window
+// what is glfw - it's a graphics library framework for creating windows
+// with OpenGL contexts and managing input and events
+// very useful and easy to use
 
 // go to properties of the project and set the include directory to point to the glfw include folder
 // go to properties of the project and set the linker input additional dependencies to include glfw3.lib and opengl32.lib
@@ -13,6 +15,8 @@
 
 // GLFW https://www.glfw.org/
 // glad https://glad.dav1d.de/
+
+GLuint VAO, VBO;
 
 int main() { // main is the entry point for every C++ program
 	LOG_INFO("Hello, Let's open a window with GLFW");
@@ -37,11 +41,56 @@ int main() { // main is the entry point for every C++ program
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+	// Initialize GLAD before calling any OpenGL function
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		LOG_ERROR("Failed to initialize GLAD");
+		return -1;
+	}
+	else {
+		LOG_INFO("GLAD initialized successfully");
+	}
+
+	// #############################################
+	
+    float vertices[] = {
+            /*-1.0f, -1.0f, 
+             1.0f, -1.0f, 
+             0.0f,  1.0f*/
+
+             - 0.5f, -0.5f,
+             0.5f, -0.5f,
+             0.0f,  0.5f
+    };
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+
+	// #############################################
+
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         // Render here 
         glClear(GL_COLOR_BUFFER_BIT);
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // set clear color to a dark teal color
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(0);
 
         // Swap front and back buffers 
         glfwSwapBuffers(window);
