@@ -2,6 +2,7 @@
 #include "../header/mylog.h"
 #include "glad\glad.h" // include the glad header file
 #include <GLFW/glfw3.h> // include the GLFW header file
+#include "../header/shader.h" // include our shader class
 // Ok so this one will be a bit longer because
 // we are make our first C++ program with an external library GLFW to create a window
 // what is glfw - it's a graphics library framework for creating windows
@@ -20,6 +21,9 @@ GLuint VAO, VBO;
 
 int main() { // main is the entry point for every C++ program
 	LOG_INFO("Hello, Let's open a window with GLFW");
+
+
+
 
     GLFWwindow* window;
 
@@ -51,9 +55,11 @@ int main() { // main is the entry point for every C++ program
 		LOG_INFO("GLAD initialized successfully");
 	}
 
-	// #############################################
+    Shader shader("shaders/shader.vert", "shaders/shader.frag");
+
+	// ############################################# Draw a triangle setup
 	
-    float vertices[] = {
+	float vertices[] = { // This is an array of 3 2D vertices (x, y) for a triangle
             /*-1.0f, -1.0f, 
              1.0f, -1.0f, 
              0.0f,  1.0f*/
@@ -63,14 +69,15 @@ int main() { // main is the entry point for every C++ program
              0.0f,  0.5f
     };
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+	glGenVertexArrays(1, &VAO); // generate a vertex array object
+	glBindVertexArray(VAO); // bind the vertex array object
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glGenBuffers(1, &VBO); // generate a vertex buffer object
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind the vertex buffer object
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // copy the vertex data to the buffer
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // set the vertex attribute pointer
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -79,19 +86,24 @@ int main() { // main is the entry point for every C++ program
 
 	// #############################################
 
-
+	
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+       
         // Render here 
         glClear(GL_COLOR_BUFFER_BIT);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // set clear color to a dark teal color
 
+		shader.Use();
+        shader.SetUniformVec3("uColor", 0.1f, 0.9f, 0.4f); // green-ish
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
 
+        
         // Swap front and back buffers 
         glfwSwapBuffers(window);
 
