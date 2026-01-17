@@ -17,10 +17,10 @@
 // GLFW https://www.glfw.org/
 // glad https://glad.dav1d.de/
 
-GLuint VAO, VBO;
 
 int main() { // main is the entry point for every C++ program
 	LOG_INFO("Hello, Let's open a window with GLFW");
+
 
 
 
@@ -55,10 +55,14 @@ int main() { // main is the entry point for every C++ program
 		LOG_INFO("GLAD initialized successfully");
 	}
 
+	LOG_TRACE("OpenGL version: " << std::string((const char*)glGetString(GL_VERSION)));
+
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
 
 	// ############################################# Draw a triangle setup
 	
+	GLuint VAO, VBO; // declare vertex array object and vertex buffer object
+
 	float vertices[] = { // This is an array of 3 2D vertices (x, y) for a triangle
             /*-1.0f, -1.0f, 
              1.0f, -1.0f, 
@@ -85,12 +89,23 @@ int main() { // main is the entry point for every C++ program
 
 
 	// #############################################
-
+	// ######################## Arrays setup bit more info ######
+			//                     0,    1,       2
+	std::string TestArray[] = { "Red", "Green", "Blue" }; // an array of strings
+	int intArray[]{ 10, 12, 19, 22 }; //an array of integers
 	
+	LOG_INFO("Array at index 0 " << TestArray[0]); // access the second element of the array (index 1)
+	LOG_INFO("Array at index 1 " << TestArray[1]); // access the second element of the array (index 1)
+	LOG_INFO("Array at index 2 " << TestArray[2]); // access the second element of the array (index 1)
+
+	LOG_INFO("Array at index 0 " << intArray[0]); // access the second element of the array (index 1)
+	LOG_INFO("Array at index 1 " << intArray[1]); // access the second element of the array (index 1)
+	LOG_INFO("Array at index 3 " << intArray[3]); // access the second element of the array (index 1)
+	//print out array size
+	LOG_INFO("Size of intArray is " << sizeof(intArray) / sizeof(intArray[0])); // calculate the size of the array
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-       
         // Render here 
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -98,11 +113,18 @@ int main() { // main is the entry point for every C++ program
 
 		shader.Use();
         shader.SetUniformVec3("uColor", 0.1f, 0.9f, 0.4f); // green-ish
-
+        // ##########
         glBindVertexArray(VAO);
+		/*
+        The glDrawArrays function takes as its first argument the OpenGL primitive type we would like to draw.
+        we pass in GL_TRIANGLES.
+        The second argument specifies the starting index of the vertex array we'd like to draw; we just leave this at 0.
+        The last argument specifies how many vertices we want to draw,
+        which is 3 
+        */
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
-
+		// ##########
         
         // Swap front and back buffers 
         glfwSwapBuffers(window);
