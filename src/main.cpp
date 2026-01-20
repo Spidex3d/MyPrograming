@@ -1,29 +1,12 @@
 #include "../header/log.h"
-#include "../header/mylog.h"
-#include "glad\glad.h" // include the glad header file
+#include "glad/glad.h" // include the glad header file
 #include <GLFW/glfw3.h> // include the GLFW header file
 #include "../header/shader.h" // include our shader class
-// Ok so this one will be a bit longer because
-// we are make our first C++ program with an external library GLFW to create a window
-// what is glfw - it's a graphics library framework for creating windows
-// with OpenGL contexts and managing input and events
-// very useful and easy to use
-
-// go to properties of the project and set the include directory to point to the glfw include folder
-// go to properties of the project and set the linker input additional dependencies to include glfw3.lib and opengl32.lib
-// also set the library directory to point to the glfw lib folder
-// set the latest c++ standard in project properties to c++20
-
-// GLFW https://www.glfw.org/
-// glad https://glad.dav1d.de/
+#include "../header/Texture.h" // include our texture loading function
 
 
 int main() { // main is the entry point for every C++ program
 	LOG_INFO("Hello, Let's open a window with GLFW");
-
-
-
-
 
     GLFWwindow* window;
 
@@ -32,7 +15,7 @@ int main() { // main is the entry point for every C++ program
         return false;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "My first window", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "My first Texture", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -44,6 +27,8 @@ int main() { // main is the entry point for every C++ program
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+	// Enable VSync (optional, helps limit frame rate)
+	glfwSwapInterval(1);
 
 	// Initialize GLAD before calling any OpenGL function
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -58,20 +43,34 @@ int main() { // main is the entry point for every C++ program
 	LOG_TRACE("OpenGL version: " << std::string((const char*)glGetString(GL_VERSION)));
 
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
+	// Bind the sampler uniform once: make sure the shader program is active first.
+	shader.Use();
+	shader.SetUniformInt("myTexture", 0); // explicit: sample from texture unit 0
+
+
+	// Load texture using our Texture class
+	Texture tex("textures/github.jpg");
+	if (!tex.IsLoaded()) {
+		LOG_WARNING("Failed to load texture: textures/github.jpg");
+		// optional: fall back or continue without texture
+	}
 
 	// ############################################# Draw a triangle setup
 	
-	GLuint VAO, VBO; // declare vertex array object and vertex buffer object
+	GLuint VAO, VBO, EBO; // declare vertex array object and vertex buffer object
 
 	float vertices[] = { // This is an array of 3 2D vertices (x, y) for a triangle
-            /*-1.0f, -1.0f, 
-             1.0f, -1.0f, 
-             0.0f,  1.0f*/
-
-             - 0.5f, -0.5f,
-             0.5f, -0.5f,
-             0.0f,  0.5f
-    };
+         
+		       //Positions 3         Normals         Text coords 2 UV
+             0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+			 0.5f,  -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+			 -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+			 -0.5f, 0.5f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f
+	};										   
+	GLuint indices[] = { // note we start from 0!
+		0, 1, 3,
+		1, 2, 3
+	};
 
 	glGenVertexArrays(1, &VAO); // generate a vertex array object
 	glBindVertexArray(VAO); // bind the vertex array object
@@ -80,50 +79,44 @@ int main() { // main is the entry point for every C++ program
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind the vertex buffer object
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // copy the vertex data to the buffer
 
-	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // set the vertex attribute pointer
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+	glGenBuffers(1, &EBO); // generate an element buffer object
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // bind the element buffer object
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // copy the index data to the buffer
+
+	// Vertex positions
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	// Normal attribute
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	// Texture coordinates
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-
-	// #############################################
-	// ######################## Arrays setup bit more info ######
-			//                     0,    1,       2
-	std::string TestArray[] = { "Red", "Green", "Blue" }; // an array of strings
-	int intArray[]{ 10, 12, 19, 22 }; //an array of integers
-	
-	LOG_INFO("Array at index 0 " << TestArray[0]); // access the second element of the array (index 1)
-	LOG_INFO("Array at index 1 " << TestArray[1]); // access the second element of the array (index 1)
-	LOG_INFO("Array at index 2 " << TestArray[2]); // access the second element of the array (index 1)
-
-	LOG_INFO("Array at index 0 " << intArray[0]); // access the second element of the array (index 1)
-	LOG_INFO("Array at index 1 " << intArray[1]); // access the second element of the array (index 1)
-	LOG_INFO("Array at index 3 " << intArray[3]); // access the second element of the array (index 1)
-	//print out array size
-	LOG_INFO("Size of intArray is " << sizeof(intArray) / sizeof(intArray[0])); // calculate the size of the array
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         // Render here 
+		glClearColor(0.2f, 0.3f, 0.6f, 1.0f); // set clear color to a dark teal color
         glClear(GL_COLOR_BUFFER_BIT);
-
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // set clear color to a dark teal color
-
-		shader.Use();
-        shader.SetUniformVec3("uColor", 0.1f, 0.9f, 0.4f); // green-ish
+				
+		shader.Use(); // bind the shader program
+		//shader.SetUniformVec3("uColor", 1.0f, 0.0f, 0.4f);  // set uniform color to pink optional
+				
         // ##########
-        glBindVertexArray(VAO);
-		/*
-        The glDrawArrays function takes as its first argument the OpenGL primitive type we would like to draw.
-        we pass in GL_TRIANGLES.
-        The second argument specifies the starting index of the vertex array we'd like to draw; we just leave this at 0.
-        The last argument specifies how many vertices we want to draw,
-        which is 3 
-        */
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
+		tex.Bind(0); // bind texture to texture unit 0
+
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		// Optional: unbind texture and program
+		Texture::Unbind(0);
+		glUseProgram(0);
+		
 		// ##########
         
         // Swap front and back buffers 
@@ -134,6 +127,13 @@ int main() { // main is the entry point for every C++ program
     }
 
     LOG_INFO("Closing our GLFW window");
+
+	// Cleanup GPU resources & memory
+	// (optional: driver will clean up on exit)
+	if (VAO) glDeleteVertexArrays(1, &VAO);
+	if (VBO) glDeleteBuffers(1, &VBO);
+	if (EBO) glDeleteBuffers(1, &EBO);
+
     glfwTerminate();
 	
 	

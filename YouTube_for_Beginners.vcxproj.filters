@@ -24,15 +24,18 @@
     <ClCompile Include="src\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="header\myLog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="header\log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

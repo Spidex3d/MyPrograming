@@ -1,13 +1,16 @@
-#version 330 core
+#version 460 core
 
-// Minimal fragment shader that outputs a solid color.
+// Minimal fragment shader that outputs a textured color.
 
 out vec4 FragColor;
 
-uniform vec3 uColor; // optional uniform to change color from C++
+in vec3 uColor;
+in vec2 TexCoord;
+
+uniform sampler2D myTexture; // sampler bound to texture unit 0 by default
 
 void main()
 {
-    // Default orange-ish color if the uniform isn't changed
-    FragColor = vec4(uColor, 1.0);
+    // Sample texture with the interpolated texture coordinates
+    FragColor = texture(myTexture, TexCoord);
 }

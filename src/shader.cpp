@@ -73,6 +73,12 @@ void Shader::SetUniformFloat(const char* name, float value) const {
 	GLint loc = glGetUniformLocation(programID, name); // get the location of the uniform variable
     if (loc != -1) glUniform1f(loc, value);
 }
+void Shader::SetUniformInt(const char* name, int value) const
+{
+	if (!programID) return;
+	GLint loc = glGetUniformLocation(programID, name); // get the location of the uniform variable
+	if (loc != -1) glUniform1i(loc, value);
+}
 // Compile a shader from source code
 bool Shader::CompileShader(const char* source, GLenum shaderType, GLuint& outShader) const {
 	GLuint shader = glCreateShader(shaderType); // create shader object
