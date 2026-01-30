@@ -14,7 +14,7 @@ public:
     // convenience uniform setters
     void SetUniformVec3(const char* name, float x, float y, float z) const;
     void SetUniformFloat(const char* name, float value) const;
-    void SetUniformInt(const char* name, int value) const;
+	void SetUniformInt(const char* name, int value) const; // set an int uniform
 
     
     GLuint ID() const { return programID; }

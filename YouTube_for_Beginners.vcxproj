@@ -135,15 +135,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="header\App.h" />
+    <ClInclude Include="header\Entity.h" />
     <ClInclude Include="header\log.h" />
     <ClInclude Include="header\shader.h" />
     <ClInclude Include="header\Texture.h" />
+    <ClInclude Include="header\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader.frag" />
