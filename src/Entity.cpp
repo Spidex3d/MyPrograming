@@ -41,6 +41,7 @@ bool Entity::Initialize(GLFWwindow* window)
         LOG_WARNING("Failed to load texture");
         // continue anyway — shader will sample black/undefined but app not crash
     }
+    LOG_INFO("Texture loaded successfully with ID: " << texture->ID());
 
     // Setup mesh (VAO/VBO/EBO once)
     SetupMesh();
@@ -116,6 +117,7 @@ void Entity::Render()
     if (texture && texture->IsLoaded()) {
         texture->Bind(0);
     }
+	
 
 	// Bind VAO
     glBindVertexArray(VAO);

@@ -142,6 +142,13 @@
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\WindowManager.cpp" />
+    <ClCompile Include="vendors\imgui\imgui.cpp" />
+    <ClCompile Include="vendors\imgui\imgui_demo.cpp" />
+    <ClCompile Include="vendors\imgui\imgui_draw.cpp" />
+    <ClCompile Include="vendors\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="vendors\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="vendors\imgui\imgui_tables.cpp" />
+    <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\App.h" />
@@ -150,6 +157,15 @@
     <ClInclude Include="header\shader.h" />
     <ClInclude Include="header\Texture.h" />
     <ClInclude Include="header\WindowManager.h" />
+    <ClInclude Include="vendors\imgui\imconfig.h" />
+    <ClInclude Include="vendors\imgui\imgui.h" />
+    <ClInclude Include="vendors\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="vendors\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="vendors\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="vendors\imgui\imgui_internal.h" />
+    <ClInclude Include="vendors\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendors\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendors\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader.frag" />
