@@ -78,8 +78,11 @@ void WindowManager::ImGuiInitialize(GLFWwindow* window)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
+    
 
     ImGuiStyle& style = ImGui::GetStyle();
+
+	style.WindowRounding = 5.0f; // Rounded corners for windows
 
     // Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(window, true); // GLFW & OpenGL3 backend initialization

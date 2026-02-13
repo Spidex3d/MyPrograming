@@ -44,6 +44,7 @@ int App::RunApp()
         AppShutdown();
         return -1;
     }
+	bool show_demo_window = false; // flag to control ImGui demo window (optional)
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -53,12 +54,24 @@ int App::RunApp()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-		windowManager.ImGuiNewFrame(window); // start new ImGui frame (optional)
+        windowManager.ImGuiNewFrame(window); // start new ImGui frame (optional)
 
-		ImGui::Begin("Hello, ImGui!"); // create a simple ImGui window (optional)
-		ImGui::Text("This is a simple ImGui window."); // add some text to the ImGui window (optional)
+        //if (show_demo_window) {
+        //	ImGui::ShowDemoWindow(&show_demo_window); // show ImGui demo window (optional)
+        //}
+
+        ImGui::Begin("Hello, ImGui!"); // create a simple ImGui window (optional)
+        ImGui::Text("This is a simple ImGui window."); // add some text to the ImGui window (optional)
+
+
+        if (ImGui::Button("Demo Window")) {
+            show_demo_window = !show_demo_window; // Toggle the demo window visibility
+        }
+        if (show_demo_window) {
+            ImGui::ShowDemoWindow(&show_demo_window); // Show the ImGui demo window
+        }
+    
 		ImGui::End(); // end the ImGui window (optional)
-
         // Render entity
         entity.Render();
 
