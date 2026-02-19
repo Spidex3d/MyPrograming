@@ -59,8 +59,10 @@ int App::RunApp()
         //if (show_demo_window) {
         //	ImGui::ShowDemoWindow(&show_demo_window); // show ImGui demo window (optional)
         //}
+        bool opened = false; // Define the "opened" variable to track the ImGui window state.
 
-        ImGui::Begin("Hello, ImGui!"); // create a simple ImGui window (optional)
+        ImGui::Begin("Hello, ImGui!", &opened, ImGuiWindowFlags_NoResize); // create a simple ImGui window (optional)
+        // Add a definition for the "opened" variable at the top of the RunApp method or as a private member of the App class.  
         ImGui::Text("This is a simple ImGui window."); // add some text to the ImGui window (optional)
 
 

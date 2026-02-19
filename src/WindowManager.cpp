@@ -5,6 +5,7 @@
 #include "imgui/imgui_impl_opengl3.h"   
 #include "stb/stb_image.h"
 
+
 // Constructor initializes members
 WindowManager::WindowManager(int width_, int height_, const char* title_)
     : width(width_), height(height_), title(title_), window(nullptr)
@@ -68,19 +69,26 @@ void WindowManager::GLFWIcon()
 
 void WindowManager::ImGuiInitialize(GLFWwindow* window)
 {
-    // Setup Dear ImGui context
+   
+
+
+     //Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-    // Setup Dear ImGui style
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ImGuiConfigFlags_DockingEnable
+      
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
     
 
     ImGuiStyle& style = ImGui::GetStyle();
+
+	//style.Colors[ImGuiCol_WindowBg].w = 0.8f; // Semi-transparent window background
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(1.0f, 0.31f, 0.31f, 1.0f);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.0f, 0.31f, 0.31f, 1.0f); // Semi-transparent window background
 
 	style.WindowRounding = 5.0f; // Rounded corners for windows
 
@@ -97,6 +105,53 @@ void WindowManager::ImGuiNewFrame(GLFWwindow* window)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+}
+
+void WindowManager::MainDockSpace(bool* p_open)
+{
+//    static bool opt_fullscreen = true;
+//    static bool opt_padding = false;
+//    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;// I changed this so my scean shows up on start up
+//
+//    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+//    if (opt_fullscreen)
+//    {
+//        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+//        ImGui::SetNextWindowPos(viewport->WorkPos);
+//        ImGui::SetNextWindowSize(viewport->WorkSize);
+//        ImGui::SetNextWindowViewport(viewport->ID);
+//        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+//        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+//        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+//        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+//    }
+//    else
+//    {
+//        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+//    }
+//
+//    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+//        window_flags |= ImGuiWindowFlags_NoBackground;
+//
+//    if (!opt_padding)
+//        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)); // you can add a bit of padding  
+//    ImGui::Begin("DockSpace Demo", p_open, window_flags);
+//    if (!opt_padding)
+//        ImGui::PopStyleVar();
+//
+//    if (opt_fullscreen)
+//        ImGui::PopStyleVar(2);
+//
+//
+//    // Submit the DockSpace to the ini file
+//    ImGuiIO& io = ImGui::GetIO();
+//    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+//    {
+//        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+//        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+//    }
+//
+//    ImGui::End();
 }
 
 void WindowManager::ImGuiRender(GLFWwindow* window)

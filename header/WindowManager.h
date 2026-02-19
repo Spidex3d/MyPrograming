@@ -21,6 +21,7 @@ public:
 	// ImGui setup functins
 	void ImGuiInitialize(GLFWwindow* window); // new function to initialize ImGui
 	void ImGuiNewFrame(GLFWwindow* window); // new function to start a new ImGui frame
+	void MainDockSpace(bool* p_open); // docking space
 	void ImGuiRender(GLFWwindow* window); // new function to render ImGui
 	void ImGuiShutdown(); // new function to clean up ImGui resources
 
