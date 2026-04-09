@@ -5,6 +5,13 @@
 #include "imgui/imgui_impl_opengl3.h"   
 #include "stb/stb_image.h"
 
+// ################################################################## Helper #####################################
+static void DestroyFBO(GLuint& fbo, GLuint& color, GLuint& depth) {
+    if (depth) { glDeleteRenderbuffers(1, &depth); depth = 0; }
+    if (color) { glDeleteTextures(1, &color); color = 0; }
+    if (fbo) { glDeleteFramebuffers(1, &fbo); fbo = 0; }
+}
+
 
 // Constructor initializes members
 WindowManager::WindowManager(int width_, int height_, const char* title_)
@@ -87,7 +94,7 @@ void WindowManager::ImGuiInitialize(GLFWwindow* window)
     ImGuiStyle& style = ImGui::GetStyle();
 
 	//style.Colors[ImGuiCol_WindowBg].w = 0.8f; // Semi-transparent window background
-    style.Colors[ImGuiCol_WindowBg] = ImVec4(1.0f, 0.31f, 0.31f, 1.0f);
+   // style.Colors[ImGuiCol_WindowBg] = ImVec4(1.0f, 0.31f, 0.31f, 1.0f);
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.0f, 0.31f, 0.31f, 1.0f); // Semi-transparent window background
 
 	style.WindowRounding = 5.0f; // Rounded corners for windows
@@ -109,49 +116,189 @@ void WindowManager::ImGuiNewFrame(GLFWwindow* window)
 
 void WindowManager::MainDockSpace(bool* p_open)
 {
-//    static bool opt_fullscreen = true;
-//    static bool opt_padding = false;
-//    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;// I changed this so my scean shows up on start up
-//
-//    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-//    if (opt_fullscreen)
-//    {
-//        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-//        ImGui::SetNextWindowPos(viewport->WorkPos);
-//        ImGui::SetNextWindowSize(viewport->WorkSize);
-//        ImGui::SetNextWindowViewport(viewport->ID);
-//        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-//        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-//        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-//        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-//    }
-//    else
-//    {
-//        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
-//    }
-//
-//    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-//        window_flags |= ImGuiWindowFlags_NoBackground;
-//
-//    if (!opt_padding)
-//        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)); // you can add a bit of padding  
-//    ImGui::Begin("DockSpace Demo", p_open, window_flags);
-//    if (!opt_padding)
-//        ImGui::PopStyleVar();
-//
-//    if (opt_fullscreen)
-//        ImGui::PopStyleVar(2);
-//
-//
-//    // Submit the DockSpace to the ini file
-//    ImGuiIO& io = ImGui::GetIO();
-//    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-//    {
-//        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-//        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-//    }
-//
-//    ImGui::End();
+    static bool opt_fullscreen = true;
+    static bool opt_padding = false;
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;// I changed this so my scean shows up on start up
+
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+    if (opt_fullscreen)
+    {
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    }
+    else
+    {
+        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+    }
+
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+        window_flags |= ImGuiWindowFlags_NoBackground;
+
+    if (!opt_padding)
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)); // you can add a bit of padding  
+    ImGui::Begin("DockSpace", p_open, window_flags);
+    if (!opt_padding)
+        ImGui::PopStyleVar();
+
+    if (opt_fullscreen)
+        ImGui::PopStyleVar(2);
+
+    // Submit the DockSpace to the ini file
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+    {
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    }
+
+    ImGui::End();
+}
+
+void WindowManager::MainWindow(GLFWwindow* window)
+{
+    ImGui::Begin("Main scene");
+    const float window_width = ImGui::GetContentRegionAvail().x;
+    const float window_height = ImGui::GetContentRegionAvail().y;
+    ImGuiIO& io = ImGui::GetIO();
+
+	// draw your main window here, this is where your OpenGL rendering will show up
+    int desired_w = static_cast<int>(window_width * io.DisplayFramebufferScale.x);
+    int desired_h = static_cast<int>(window_height * io.DisplayFramebufferScale.y);
+
+    if (desired_w > 0 && desired_h > 0) {
+        if (desired_w != m_fbWidth || desired_h != m_fbHeight || m_fbo == 0) {
+            Rescale_frambuffer((float)desired_w, (float)desired_h);
+        }
+    }
+
+    if (m_fbo) {
+        // Bind FBO and clear
+        Bind_Framebuffer();
+        glClearColor(0.12f, 0.15f, 0.18f, 1.0f);
+        glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Call the registered render callback so Engine renders into the bound FBO.
+        // If no callback is set, nothing happens (safe).
+        if (m_renderCallback) {
+            m_renderCallback();
+        }
+
+        // Done rendering to FBO
+        Unbinde_Frambuffer();
+
+
+
+        ImGui::Image((void*)(intptr_t)m_fboColor,
+            ImVec2(window_width, window_height),
+            ImVec2(0, 1), ImVec2(1, 0)); // uv0, uv1 flipped for GL
+
+    }
+    else {
+        // fallback: draw empty box or placeholder text
+        ImGui::TextWrapped("Frame buffer not initialized.");
+    }
+
+
+	ImGui::End();
+}
+
+void WindowManager::Create_FrameBuffer()
+{
+    int w = GetWidth();
+    int h = GetHeight();
+    if (w <= 0 || h <= 0) return;
+    Rescale_frambuffer((float)w, (float)h);
+}
+
+void WindowManager::Bind_Framebuffer()
+{
+    if (!m_fbo) return;
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    glViewport(0, 0, m_fbWidth, m_fbHeight);
+}
+
+void WindowManager::Unbinde_Frambuffer()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    int w = GetWidth();
+    int h = GetHeight();
+    if (w > 0 && h > 0) {
+        glViewport(0, 0, w, h);
+    }
+}
+
+void WindowManager::Rescale_frambuffer(float width, float height)
+{
+    int w = static_cast<int>(width);
+    int h = static_cast<int>(height);
+    if (w <= 0 || h <= 0) return;
+
+    // If same size, nothing to do
+    if (m_fbo && m_fbWidth == w && m_fbHeight == h) return;
+
+    // Destroy old attachments (if any)
+    DestroyFBO(m_fbo, m_fboColor, m_fboDepth);
+
+    // Create new color texture
+    glGenTextures(1, &m_fboColor);
+    glBindTexture(GL_TEXTURE_2D, m_fboColor);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // Optional: clamp
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Create depth+stencil renderbuffer
+    glGenRenderbuffers(1, &m_fboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_fboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    // Create framebuffer and attach
+    glGenFramebuffers(1, &m_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fboColor, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_fboDepth);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
+        LOG_WARNING("Failed to create framebuffer: status=0x%x", (unsigned)status);
+        DestroyFBO(m_fbo, m_fboColor, m_fboDepth);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        m_fbWidth = m_fbHeight = 0;
+        return;
+    }
+
+    // success
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_fbWidth = w;
+    m_fbHeight = h;
+    LOG_INFO("Created FBO %u (color=%u depth=%u) size=%dx%d", (unsigned)m_fbo, (unsigned)m_fboColor, (unsigned)m_fboDepth, w, h);
+}
+
+int WindowManager::GetWidth() const
+{
+    if (!window) return 0;
+    int w, h;
+    glfwGetFramebufferSize(window, &w, &h);
+    return w;
+}
+
+int WindowManager::GetHeight() const
+{
+    if (!window) return 0;
+    int w, h;
+    glfwGetFramebufferSize(window, &w, &h);
+    return h;
 }
 
 void WindowManager::ImGuiRender(GLFWwindow* window)

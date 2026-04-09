@@ -46,6 +46,14 @@ int App::RunApp()
     }
 	bool show_demo_window = false; // flag to control ImGui demo window (optional)
 
+    // ################################################# New bit ################################
+    windowManager.m_renderCallback = [&entity]()
+    {
+        entity.Render();
+    };
+
+    bool show_hello_window = true;
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -56,12 +64,14 @@ int App::RunApp()
 
         windowManager.ImGuiNewFrame(window); // start new ImGui frame (optional)
 
-        //if (show_demo_window) {
-        //	ImGui::ShowDemoWindow(&show_demo_window); // show ImGui demo window (optional)
-        //}
-        bool opened = false; // Define the "opened" variable to track the ImGui window state.
+        bool p_open = true;
+        windowManager.MainDockSpace(&p_open);
+        
 
-        ImGui::Begin("Hello, ImGui!", &opened, ImGuiWindowFlags_NoResize); // create a simple ImGui window (optional)
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse; // Set ImGui window flags (optional) 
+		//ImGuiWindowFlags window_flags = ImGuiWindowFlags_None; // Set ImGui window flags (optional) 
+        ImGui::Begin("Hello, ImGui!", &show_demo_window, flags); // create a simple ImGui window (optional)
+        //ImGui::Begin("Hello, ImGui!", &opened, ImGuiWindowFlags_NoResize); // create a simple ImGui window (optional)
         // Add a definition for the "opened" variable at the top of the RunApp method or as a private member of the App class.  
         ImGui::Text("This is a simple ImGui window."); // add some text to the ImGui window (optional)
 
@@ -74,8 +84,11 @@ int App::RunApp()
         }
     
 		ImGui::End(); // end the ImGui window (optional)
+        // ################################################## Dont forget to call this #################################
+		windowManager.MainWindow(window); // set up main ImGui window for OpenGL rendering (optional)
+
         // Render entity
-        entity.Render();
+        //entity.Render();
 
 		windowManager.ImGuiRender(window); // render ImGui (optional)
 
