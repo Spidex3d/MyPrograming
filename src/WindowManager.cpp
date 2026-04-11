@@ -167,7 +167,7 @@ void WindowManager::MainWindow(GLFWwindow* window)
     const float window_height = ImGui::GetContentRegionAvail().y;
     ImGuiIO& io = ImGui::GetIO();
 
-	// draw your main window here, this is where your OpenGL rendering will show up
+    // draw your main window here, this is where your OpenGL rendering will show up
     int desired_w = static_cast<int>(window_width * io.DisplayFramebufferScale.x);
     int desired_h = static_cast<int>(window_height * io.DisplayFramebufferScale.y);
 
@@ -195,7 +195,7 @@ void WindowManager::MainWindow(GLFWwindow* window)
 
 
 
-        ImGui::Image((void*)(intptr_t)m_fboColor,
+        ImGui::Image((void*)(intptr_t)m_fboViewPortTexture,
             ImVec2(window_width, window_height),
             ImVec2(0, 1), ImVec2(1, 0)); // uv0, uv1 flipped for GL
 
@@ -205,8 +205,105 @@ void WindowManager::MainWindow(GLFWwindow* window)
         ImGui::TextWrapped("Frame buffer not initialized.");
     }
 
+	// ################################### Detect right-click for popup menu (existing UI code) ##########################
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    {
+        ImGui::OpenPopup("RightClickMenu");
 
+    }
+
+    if (ImGui::BeginPopup("RightClickMenu"))
+    {
+
+        if (ImGui::BeginMenu("Add a Tiles")) {
+            if (ImGui::MenuItem("Ground")) {
+                // Request engine to add a Obj via action callback
+              //  if (m_actionCallback) m_actionCallback("AddTileTop");
+            }
+
+            if (ImGui::MenuItem("Water")) {
+                // Request engine to add a Gltf via action callback
+              //  if (m_actionCallback) m_actionCallback("AddTree");
+            }
+            // other menu items...
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndPopup();
+    }
 	ImGui::End();
+}
+
+
+
+void WindowManager::MainMenuBar(GLFWwindow* window)
+{
+    ImGui::BeginMainMenuBar();
+    if (ImGui::BeginMenu("File"))
+    {
+        if (ImGui::MenuItem("New scene"))
+        {
+
+        }
+        if (ImGui::MenuItem("Open scene"))
+        {
+           
+
+        }
+        ImGui::Separator();
+        if (ImGui::MenuItem("Save scene"))
+        {
+
+        }
+
+
+        if (ImGui::MenuItem("Save As scene"))
+        {
+
+        }
+        ImGui::Separator();
+        if (ImGui::MenuItem("Exit"))
+        {
+            glfwSetWindowShouldClose(window, true);
+        }
+        ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Edit"))
+    {
+        if (ImGui::MenuItem("Cut"))
+        {
+
+        }
+        if (ImGui::MenuItem("Copy"))
+        {
+
+        }
+        if (ImGui::MenuItem("Paste"))
+        {
+
+        }
+        ImGui::Separator();
+        if (ImGui::MenuItem("Wire Frame"))
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+        if (ImGui::MenuItem("Wire Frame off"))
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+        ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Settings"))
+    {
+        
+
+        ImGui::EndMenu();
+    }
+
+
+    ImGui::EndMainMenuBar();
 }
 
 void WindowManager::Create_FrameBuffer()
@@ -244,11 +341,11 @@ void WindowManager::Rescale_frambuffer(float width, float height)
     if (m_fbo && m_fbWidth == w && m_fbHeight == h) return;
 
     // Destroy old attachments (if any)
-    DestroyFBO(m_fbo, m_fboColor, m_fboDepth);
+    DestroyFBO(m_fbo, m_fboViewPortTexture, m_fboDepth);
 
     // Create new color texture
-    glGenTextures(1, &m_fboColor);
-    glBindTexture(GL_TEXTURE_2D, m_fboColor);
+    glGenTextures(1, &m_fboViewPortTexture);
+    glBindTexture(GL_TEXTURE_2D, m_fboViewPortTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -266,13 +363,13 @@ void WindowManager::Rescale_frambuffer(float width, float height)
     // Create framebuffer and attach
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fboColor, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fboViewPortTexture, 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_fboDepth);
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE) {
         LOG_WARNING("Failed to create framebuffer: status=0x%x", (unsigned)status);
-        DestroyFBO(m_fbo, m_fboColor, m_fboDepth);
+        DestroyFBO(m_fbo, m_fboViewPortTexture, m_fboDepth);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         m_fbWidth = m_fbHeight = 0;
         return;
@@ -282,7 +379,7 @@ void WindowManager::Rescale_frambuffer(float width, float height)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     m_fbWidth = w;
     m_fbHeight = h;
-    LOG_INFO("Created FBO %u (color=%u depth=%u) size=%dx%d", (unsigned)m_fbo, (unsigned)m_fboColor, (unsigned)m_fboDepth, w, h);
+    LOG_INFO("Created FBO %u (color=%u depth=%u) size=%dx%d", (unsigned)m_fbo, (unsigned)m_fboViewPortTexture, (unsigned)m_fboDepth, w, h);
 }
 
 int WindowManager::GetWidth() const

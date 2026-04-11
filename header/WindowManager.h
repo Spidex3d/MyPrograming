@@ -5,7 +5,7 @@
 
 constexpr int SCR_WIDTH = 800;
 constexpr int SCR_HEIGHT = 600;
-constexpr const char* TITLE = "Add Icon to project"; // new 
+constexpr const char* TITLE = "Add ImGui Viewport"; // Change the project to a 2d Platform Editor 
 constexpr const char* ICON_PATH = "textures/github.jpg"; // new
 
 
@@ -30,6 +30,7 @@ public:
 
 	// ################################################### New functions for framebuffer management ######################
 	void MainWindow(GLFWwindow* window); // main window for drawingthe opengl objects
+	void MainMenuBar(GLFWwindow* window); // main menu bar (optional)
 
 	void Create_FrameBuffer();                 // create or recreate the framebuffer using current size
 	void Bind_Framebuffer();                  // bind the offscreen FBO for rendering
@@ -59,7 +60,7 @@ private:
 	const char* title{ nullptr };   // window title
 	// New members for framebuffer management
 	GLuint m_fbo = 0;
-	GLuint m_fboColor = 0; // color texture
+	GLuint m_fboViewPortTexture = 0; // color texture
 	GLuint m_fboDepth = 0;
 	int m_fbWidth = 0;
 	int m_fbHeight = 0;

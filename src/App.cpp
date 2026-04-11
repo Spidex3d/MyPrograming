@@ -44,16 +44,17 @@ int App::RunApp()
         AppShutdown();
         return -1;
     }
-	bool show_demo_window = false; // flag to control ImGui demo window (optional)
 
     // ################################################# New bit ################################
     windowManager.m_renderCallback = [&entity]()
     {
         entity.Render();
     };
+    // ################################################# New bit ################################
 
     bool show_hello_window = true;
-
+	bool show_dockspace = true;
+	bool show_demo_window = false; // flag to control ImGui demo window (optional)
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -64,28 +65,30 @@ int App::RunApp()
 
         windowManager.ImGuiNewFrame(window); // start new ImGui frame (optional)
 
-        bool p_open = true;
-        windowManager.MainDockSpace(&p_open);
+       
+        windowManager.MainDockSpace(&show_dockspace);
         
 
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse; // Set ImGui window flags (optional) 
 		//ImGuiWindowFlags window_flags = ImGuiWindowFlags_None; // Set ImGui window flags (optional) 
-        ImGui::Begin("Hello, ImGui!", &show_demo_window, flags); // create a simple ImGui window (optional)
-        //ImGui::Begin("Hello, ImGui!", &opened, ImGuiWindowFlags_NoResize); // create a simple ImGui window (optional)
-        // Add a definition for the "opened" variable at the top of the RunApp method or as a private member of the App class.  
-        ImGui::Text("This is a simple ImGui window."); // add some text to the ImGui window (optional)
+        if (show_hello_window) {
+            ImGui::Begin("Hello, ImGui!", &show_demo_window, flags); // create a simple ImGui window (optional)
+
+            ImGui::Text("This is a simple ImGui window."); // add some text to the ImGui window (optional)
 
 
-        if (ImGui::Button("Demo Window")) {
-            show_demo_window = !show_demo_window; // Toggle the demo window visibility
+            if (ImGui::Button("Demo Window")) {
+                show_demo_window = !show_demo_window; // Toggle the demo window visibility
+            }
+            if (show_demo_window) {
+                ImGui::ShowDemoWindow(&show_demo_window); // Show the ImGui demo window
+            }
+
+            ImGui::End(); // end the ImGui window (optional)
         }
-        if (show_demo_window) {
-            ImGui::ShowDemoWindow(&show_demo_window); // Show the ImGui demo window
-        }
-    
-		ImGui::End(); // end the ImGui window (optional)
         // ################################################## Dont forget to call this #################################
 		windowManager.MainWindow(window); // set up main ImGui window for OpenGL rendering (optional)
+		windowManager.MainMenuBar(window); // set up main menu bar (optional)
 
         // Render entity
         //entity.Render();
