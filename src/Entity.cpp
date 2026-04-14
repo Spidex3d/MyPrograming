@@ -50,6 +50,26 @@ bool Entity::Initialize(GLFWwindow* window)
     return true;
 }
 
+void Entity::DrawGameObj(GameObj* obj)
+{
+    if (!initialized || !obj) return;
+
+    shader->Use();
+
+    if (texture && texture->IsLoaded()) {
+        texture->Bind(0);
+    }
+
+    PlaneModel* plane = dynamic_cast<PlaneModel*>(obj);
+    if (plane && obj->isVisible) {
+        plane->DrawPlane();
+    }
+
+    Texture::Unbind(0);
+    glUseProgram(0);
+
+}
+
 void Entity::SetupMesh()
 {
     // Quad data (positions, placeholder normals/colors, texcoords)

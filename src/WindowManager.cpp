@@ -5,6 +5,7 @@
 #include "imgui/imgui_impl_opengl3.h"   
 #include "stb/stb_image.h"
 
+
 // ################################################################## Helper #####################################
 static void DestroyFBO(GLuint& fbo, GLuint& color, GLuint& depth) {
     if (depth) { glDeleteRenderbuffers(1, &depth); depth = 0; }
@@ -216,9 +217,9 @@ void WindowManager::MainWindow(GLFWwindow* window)
     {
 
         if (ImGui::BeginMenu("Add a Tiles")) {
-            if (ImGui::MenuItem("Ground")) {
+            if (ImGui::MenuItem("Tile")) {
                 // Request engine to add a Obj via action callback
-              //  if (m_actionCallback) m_actionCallback("AddTileTop");
+                if (m_actionCallback) m_actionCallback("AddTile");
             }
 
             if (ImGui::MenuItem("Water")) {
@@ -302,8 +303,34 @@ void WindowManager::MainMenuBar(GLFWwindow* window)
         ImGui::EndMenu();
     }
 
+     // Set to true to show the demo window on start
+    if (ImGui::BeginMenu("Help"))
+    {
+        if (ImGui::MenuItem("ImGui Help")) {
+            {
+                
+               
+            }
+            
+        }
+        if (ImGui::MenuItem("Editor Help"))
+        {
+
+
+        }
+        ImGui::Separator();
+        if (ImGui::MenuItem("About Help"))
+        {
+
+        }
+
+        ImGui::EndMenu();
+    }
+
 
     ImGui::EndMainMenuBar();
+
+    
 }
 
 void WindowManager::Create_FrameBuffer()
@@ -397,6 +424,8 @@ int WindowManager::GetHeight() const
     glfwGetFramebufferSize(window, &w, &h);
     return h;
 }
+
+
 
 void WindowManager::ImGuiRender(GLFWwindow* window)
 {

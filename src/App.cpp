@@ -5,11 +5,24 @@
 #include "../header/log.h"
 #include <imgui/imgui.h>
 
+
+
+Entity entity;
 // Simple singleton instance
 App* App::Instance()
 {
     static App instance;
     return &instance;
+}
+
+
+void App::SetActionCallback(const std::string& cmd)
+{
+    if (cmd == "AddTile") {
+		// place at center by default later set to a grid square under mouse cursor
+        AddPlane(glm::vec3(0.0f, 0.0f, 0.0f));
+    }
+   
 }
 
 int App::RunApp()
@@ -46,15 +59,24 @@ int App::RunApp()
     }
 
     // ################################################# New bit ################################
-    windowManager.m_renderCallback = [&entity]()
+   
+    windowManager.m_renderCallback = [this, &entity]()
     {
-        entity.Render();
+        for (auto& obj : m_entities)
+        {
+            entity.DrawGameObj(obj.get());
+        }
+        
+    };
+
+    windowManager.m_actionCallback = [this](const std::string& cmd)
+    {
+        SetActionCallback(cmd);
     };
     // ################################################# New bit ################################
 
-    bool show_hello_window = true;
+    bool showGUI = true;
 	bool show_dockspace = true;
-	bool show_demo_window = false; // flag to control ImGui demo window (optional)
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -65,24 +87,45 @@ int App::RunApp()
 
         windowManager.ImGuiNewFrame(window); // start new ImGui frame (optional)
 
-       
+        
+
         windowManager.MainDockSpace(&show_dockspace);
         
 
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse; // Set ImGui window flags (optional) 
 		//ImGuiWindowFlags window_flags = ImGuiWindowFlags_None; // Set ImGui window flags (optional) 
-        if (show_hello_window) {
-            ImGui::Begin("Hello, ImGui!", &show_demo_window, flags); // create a simple ImGui window (optional)
-
-            ImGui::Text("This is a simple ImGui window."); // add some text to the ImGui window (optional)
+        if (showGUI) {
+            ImGui::Begin("Scene Collection"); // create a simple ImGui window (optional)
 
 
-            if (ImGui::Button("Demo Window")) {
-                show_demo_window = !show_demo_window; // Toggle the demo window visibility
+            for (int i = 0; i < (int)m_entities.size(); ++i) {
+                GameObj* obj = m_entities[i].get();
+                if (!obj) continue;
+
+                ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+               // if (m_selectedEntityIndex == i)
+                 //   node_flags |= ImGuiTreeNodeFlags_Selected;
+                // ICON_FA_TRASH_ALT ICON_FA_PLUS ICON_FA_EDIT
+
+
+                // Display name + id
+                // choose icon based on visibility (requires FA icons loaded)
+                //const char* visibilityIcon = obj->isVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+
+                // display name + id with icon prefix, keep unique ID suffix
+                std::string displayName = obj->entName.empty() ? ("Entity " + std::to_string(obj->entId)) : obj->entName;
+               std::string label = std::string(displayName + "##" + std::to_string(obj->entId));
+                //std::string label = std::string(displayName) + " " + visibilityIcon + "##" + std::to_string(obj->entId);
+
+                // render the tree node (leaf)
+                ImGui::TreeNodeEx(label.c_str(), node_flags);
+
+
             }
-            if (show_demo_window) {
-                ImGui::ShowDemoWindow(&show_demo_window); // Show the ImGui demo window
-            }
+
+
+
+            
 
             ImGui::End(); // end the ImGui window (optional)
         }
@@ -102,6 +145,31 @@ int App::RunApp()
 	windowManager.ImGuiShutdown(); // clean up ImGui resources (optional)
 	AppShutdown(); // clean up and terminate GLFW
     return 0;
+}
+
+void App::AddPlane(const glm::vec3& pos)
+{
+   /* if (!m_entity) return;
+    m_entity->CreatePlane(m_entities, m_currentEntityIndex, m_planeObjIdx, pos);
+    m_selectedEntityIndex = static_cast<int>(m_entities.size()) - 1;
+    ImGui::SetWindowFocus("Object Inspector");*/
+    int newId = static_cast<int>(m_entities.size());
+    int planeObjIdx = 0;
+
+    for (const auto& e : m_entities)
+    {
+        if (e && e->entTypeID == OBJ_PLANE)
+            ++planeObjIdx;
+    }
+
+    auto plane = std::make_unique<PlaneModel>(newId, "Tile", planeObjIdx);
+    plane->position = pos;
+
+    m_entities.push_back(std::move(plane));
+
+    LOG_INFO("Added Plane/Tile. Total entities: " << m_entities.size());
+
+
 }
 
 void App::AppShutdown()
