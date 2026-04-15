@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW\glfw3.h>
 #include <glm/glm.hpp>
+#include <vector>
 #include "../header/shader.h"
 #include "../header/Texture.h"
 
@@ -32,8 +33,8 @@ struct GameObj { // Any Editor object name change from gameObj
     int entObjectIndex; // index to the model object in the model manager Ie; how many objects of this type exist
     std::string entName;
 
-    glm::vec3 position;     // Position of the object
-    glm::vec3 scale;        // Scale of the object
+    glm::vec2 position;     // Position of the object
+    glm::vec2 scale;        // Scale of the object
     glm::vec3 rotation;     // Rotation of the object
     glm::mat4 modelMatrix;  // Model matrix for transformations
 
@@ -59,6 +60,7 @@ public:
 
     void DrawGameObj(GameObj* obj);
 
+    
     // Render the entity (call each frame)
     void Render();
 
@@ -77,8 +79,6 @@ private:
 	GLuint EBO = 0; // Element Buffer Object
 	bool initialized = false; // track if initialized
 
-    // helper to create mesh
-    void SetupMesh();
 	// helper to cleanup mesh
     void CleanupMesh();
 };
@@ -98,8 +98,8 @@ public:
         entTypeID = OBJ_PLANE; // from globalVar.h = 2
 
         // default transform
-        position = glm::vec3(0.0f);
-        scale = glm::vec3(1.0f);
+        position = glm::vec2(0.0f);
+        scale = glm::vec2(1.0f);
         rotation = glm::vec3(0.0f);
         modelMatrix = glm::mat4(1.0f);
 

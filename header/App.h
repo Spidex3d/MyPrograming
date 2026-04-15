@@ -4,6 +4,17 @@
 #include <vector>
 #include <memory>
 #include "Entity.h"
+#include <imgui/imgui.h>
+
+struct GridCell {
+	int row =0;
+	int col = 0;
+	int gridIndex = 0; // index to the grid object in the model manager
+	glm::vec2 worldPos = glm::vec2(0.0f); // world position of the cell center, used for placing objects on the grid
+	int tileID = -1; // optional: ID of the tile occupying this cell, -1 if empty
+    bool isOccupied = false;
+};
+
 
 class App {
 public:
@@ -12,6 +23,11 @@ public:
     void SetActionCallback(const std::string& cmd);
     // Run the application (initializes subsystems, enters render loop).
     int RunApp();
+	// Editor grid creation and validation and draw
+	void AddGrid(int rows, int cols, float cellSize);
+    void ValidateGridCell(GridCell* cell, int row, int col);
+    void DrawGrid(GridCell* cell, float cellSize, ImVec2 m_imagePos); // draw the grid lines 
+
 
     void AddPlane(const glm::vec3& pos = glm::vec3(0.0f));
 
@@ -28,6 +44,14 @@ private:
     App(const App&) = delete;
     App& operator=(const App&) = delete;
 
+    int m_selectedEntityIndex = -1;
+
+    // Editor Grid
+	int m_rows = 10;
+	int m_cols = 12;
+	float m_cellSize = 32.0f;
+    ImVec2 m_imagePos; // top-left corner of the grid in screen coordinates, used for drawing the grid lines
+	std::vector<GridCell> m_grid;
 
     //std::unique_ptr<App> m_entity;
     std::vector<std::unique_ptr<GameObj>> m_entities;

@@ -4,6 +4,8 @@
 #include <functional> // for std::function
 #include <string>
 
+
+
 constexpr int SCR_WIDTH = 800;
 constexpr int SCR_HEIGHT = 600;
 constexpr const char* TITLE = "Add ImGui Viewport"; // Change the project to a 2d Platform Editor 

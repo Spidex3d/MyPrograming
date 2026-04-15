@@ -206,6 +206,8 @@ void WindowManager::MainWindow(GLFWwindow* window)
         ImGui::TextWrapped("Frame buffer not initialized.");
     }
 
+
+
 	// ################################### Detect right-click for popup menu (existing UI code) ##########################
     if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
@@ -215,6 +217,14 @@ void WindowManager::MainWindow(GLFWwindow* window)
 
     if (ImGui::BeginPopup("RightClickMenu"))
     {
+        if (ImGui::BeginMenu("Add Grid")) {
+            if (ImGui::MenuItem("Grid")) {
+                // Request engine to add a Obj via action callback
+                if (m_actionCallback) m_actionCallback("AddGrid");
+            }
+            // other menu items...
+            ImGui::EndMenu();
+        }
 
         if (ImGui::BeginMenu("Add a Tiles")) {
             if (ImGui::MenuItem("Tile")) {
@@ -303,12 +313,13 @@ void WindowManager::MainMenuBar(GLFWwindow* window)
         ImGui::EndMenu();
     }
 
-     // Set to true to show the demo window on start
+    
     if (ImGui::BeginMenu("Help"))
     {
         if (ImGui::MenuItem("ImGui Help")) {
             {
-                
+              
+
                
             }
             

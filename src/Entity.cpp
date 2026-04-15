@@ -43,8 +43,7 @@ bool Entity::Initialize(GLFWwindow* window)
     }
     LOG_INFO("Texture loaded successfully with ID: " << texture->ID());
 
-    // Setup mesh (VAO/VBO/EBO once)
-    SetupMesh();
+    
 	// if we reach here, initialization has succeeded
     initialized = true;
     return true;
@@ -68,47 +67,6 @@ void Entity::DrawGameObj(GameObj* obj)
     Texture::Unbind(0);
     glUseProgram(0);
 
-}
-
-void Entity::SetupMesh()
-{
-    // Quad data (positions, placeholder normals/colors, texcoords)
-    float vertices[] = {
-        // Positions        Normals         TexCoords
-         0.5f,  0.5f, 0.0f,  0.0f,0.0f,1.0f,  1.0f, 1.0f,
-         0.5f, -0.5f, 0.0f,  0.0f,0.0f,1.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f,  0.0f,0.0f,1.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f, 0.0f,  0.0f,0.0f,1.0f,  0.0f, 1.0f
-    };
-    GLuint indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
-
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Position attribute (location = 0)
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    // Color/normal attribute (location = 1)
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    // TexCoord (location = 2)
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-    // Unbind to leave clean state
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Entity::CleanupMesh()

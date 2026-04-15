@@ -3,7 +3,8 @@
 #include "../header/WindowManager.h"
 #include "../header/Entity.h"
 #include "../header/log.h"
-#include <imgui/imgui.h>
+//#include <imgui/imgui.h>
+
 
 
 
@@ -18,6 +19,11 @@ App* App::Instance()
 
 void App::SetActionCallback(const std::string& cmd)
 {
+    if (cmd == "AddGrid") {
+        // place at center by default later set to a grid square under mouse cursor
+        AddGrid(m_rows, m_cols, m_cellSize);
+    }
+
     if (cmd == "AddTile") {
 		// place at center by default later set to a grid square under mouse cursor
         AddPlane(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -86,11 +92,141 @@ int App::RunApp()
         glClear(GL_COLOR_BUFFER_BIT);
 
         windowManager.ImGuiNewFrame(window); // start new ImGui frame (optional)
-
-        
+     
 
         windowManager.MainDockSpace(&show_dockspace);
         
+        // ############################## object editor ###############################
+        if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < (int)m_entities.size()) {
+            ImGui::Begin("Object Inspector");
+
+            if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < (int)m_entities.size()) {
+                GameObj* selected = m_entities[m_selectedEntityIndex].get();
+                if (selected) {
+                    // Name / rename
+                    char nameBuf[128];
+                    //strncpy(nameBuf, selected->entName.c_str(), sizeof(nameBuf));
+                    strncpy_s(nameBuf, selected->entName.c_str(), sizeof(nameBuf));
+                    nameBuf[sizeof(nameBuf) - 1] = '\0';
+                    if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
+                        selected->entName = std::string(nameBuf);
+                    }
+                  //  ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT "  Editor");
+                    // Position
+                    float pos[3] = { selected->position.x, selected->position.y};
+                    if (ImGui::InputFloat2("Position", pos)) {
+                        selected->position = glm::vec2(pos[0], pos[1]);
+                    }
+
+                    // Rotation (Euler degrees for editing)
+                    // store rotation in radians or degrees depending on your representation, this example uses degrees
+                    /*float rotDeg[3] = {
+                        glm::degrees(selected->rotation.x),
+                        glm::degrees(selected->rotation.y),
+                        glm::degrees(selected->rotation.z)
+                    };*/
+                    /*if (ImGui::InputFloat3("Rotation (deg)", rotDeg)) {
+                        selected->rotation = glm::vec3(glm::radians(rotDeg[0]), glm::radians(rotDeg[1]), glm::radians(rotDeg[2]));
+                    }*/
+
+                    // Scale
+                    float sc[2] = { selected->scale.x, selected->scale.y };
+                    if (ImGui::InputFloat2("Scale", sc)) {
+                        selected->scale = glm::vec2(sc[0], sc[1]);
+                    }
+
+                    // Update modelMatrix using TRS (make sure order is correct for your math)
+                   // selected->modelMatrix = glm::translate(glm::mat4(1.0f), selected->position);
+                    // apply rotation (if you use Euler -> convert to quat / rotate)
+                   // selected->modelMatrix = glm::rotate(selected->modelMatrix, selected->rotation.x, glm::vec3(1, 0, 0));
+                   /// selected->modelMatrix = glm::rotate(selected->modelMatrix, selected->rotation.y, glm::vec3(0, 1, 0));
+                    //selected->modelMatrix = glm::rotate(selected->modelMatrix, selected->rotation.z, glm::vec3(0, 0, 1));
+                   //selected->modelMatrix = glm::scale(selected->modelMatrix, selected->scale);
+
+                    ImGui::SeparatorText("Scene Properties");
+                    ImGui::Text("Gameplay Properties");
+                    //ImGui::InputInt("Points", &selected->entPoints);
+                    //if (ImGui::Checkbox("Active", &selected->isActive)) { /* optionally handle enable/disable */ }
+                    //if (ImGui::Checkbox("Rotate Y", &selected->isRotateY)) {
+                        // toggling rotateY will cause the object to start/stop rotating in the render loop
+                      //  selected->isRotateY = selected->isRotateY; // just to emphasize the change happens immediately
+                   // }
+                    //if (ImGui::Checkbox("Health Pack", &selected->isHealthPack)) {
+                        // show health points input only if flagged
+                    //}
+                    //if (selected->isHealthPack) {
+                     //   ImGui::InputInt("Health Pack Points", &selected->HealthPackPoints);
+                    //}
+                    //ImGui::Checkbox("Dangerous", &selected->isDangerous);
+                    //ImGui::Checkbox("Collidable", &selected->isCollidable);
+                    if (ImGui::Checkbox("Visible", &selected->isVisible)) {
+                        // toggling visible will affect rendering next frame
+                    }
+
+                    ImGui::SeparatorText("Texture on selected object");
+
+                    // show path or "None"
+                    if (!selected->texPath.empty()) {
+                        ImGui::TextWrapped("Path: %s", selected->texPath.c_str());
+                    }
+                    else {
+                        ImGui::Text("Texture: None");
+                    }
+
+                    // Preview (if texture present)
+                    if (selected->tex_ID != 0) {
+                        ImGui::Text("Preview:");
+                        ImGui::Image((void*)(intptr_t)selected->tex_ID, ImVec2(128, 128));
+
+                    }
+
+                    // Change texture button
+                    if (ImGui::Button("Change Texture")) {
+                        // Blocking Win32 dialog - returns UTF-8 path (your openFileDialog returns std::string)
+                        std::string path;
+                        if (window) {
+                           // path = window->openFileDialog();
+                        }
+
+                        if (!path.empty()) {
+                           /* if (!m_entity->SetTextureForGameObj(selected, path)) {
+                                LOG_WARNING("Failed to set texture for entity " << selected->entId);
+                            }*/
+                        }
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Clear Texture")) {
+                        // Clear/unload texture
+                       // m_entity->SetTextureForGameObj(selected, "");
+                    }
+
+                    // Buttons for convenience
+                    if (ImGui::Button("Focus")) {
+                        // implement camera focus in future: center camera on selected->position
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Delete")) {
+                        m_entities.erase(m_entities.begin() + m_selectedEntityIndex);
+                        m_selectedEntityIndex = -1;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Exit")) {
+                        // close object inspector - editor
+                        m_selectedEntityIndex = -1;
+                    }
+                }
+            }
+            else {
+                ImGui::Text("No object selected");
+            }
+
+            ImGui::End();
+        }
+        // ################################################ End object editor ###############################
+
+
+        
+
 
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse; // Set ImGui window flags (optional) 
 		//ImGuiWindowFlags window_flags = ImGuiWindowFlags_None; // Set ImGui window flags (optional) 
@@ -103,38 +239,40 @@ int App::RunApp()
                 if (!obj) continue;
 
                 ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-               // if (m_selectedEntityIndex == i)
-                 //   node_flags |= ImGuiTreeNodeFlags_Selected;
-                // ICON_FA_TRASH_ALT ICON_FA_PLUS ICON_FA_EDIT
+                if (m_selectedEntityIndex == i) 
+                  node_flags |= ImGuiTreeNodeFlags_Selected;
+               // ICON_FA_TRASH_ALT ICON_FA_PLUS ICON_FA_EDIT
 
 
-                // Display name + id
-                // choose icon based on visibility (requires FA icons loaded)
-                //const char* visibilityIcon = obj->isVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+               // Display name + id
+               // choose icon based on visibility (requires FA icons loaded)
+               //const char* visibilityIcon = obj->isVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
 
-                // display name + id with icon prefix, keep unique ID suffix
+               // display name + id with icon prefix, keep unique ID suffix
                 std::string displayName = obj->entName.empty() ? ("Entity " + std::to_string(obj->entId)) : obj->entName;
-               std::string label = std::string(displayName + "##" + std::to_string(obj->entId));
+                std::string label = std::string(displayName + "##" + std::to_string(obj->entId));
                 //std::string label = std::string(displayName) + " " + visibilityIcon + "##" + std::to_string(obj->entId);
 
                 // render the tree node (leaf)
                 ImGui::TreeNodeEx(label.c_str(), node_flags);
 
+                
 
-            }
+                if (ImGui::IsItemClicked()) {
+                     m_selectedEntityIndex = i;
+                }
 
-
-
-            
-
+            }    
             ImGui::End(); // end the ImGui window (optional)
         }
         // ################################################## Dont forget to call this #################################
 		windowManager.MainWindow(window); // set up main ImGui window for OpenGL rendering (optional)
 		windowManager.MainMenuBar(window); // set up main menu bar (optional)
 
-        // Render entity
-        //entity.Render();
+        for (auto& cell : m_grid)
+        {
+            DrawGrid(&cell, m_cellSize, m_imagePos);
+        }
 
 		windowManager.ImGuiRender(window); // render ImGui (optional)
 
@@ -147,12 +285,76 @@ int App::RunApp()
     return 0;
 }
 
+void App::AddGrid(int rows, int cols, float cellSize)
+{
+    m_rows = rows;
+    m_cols = cols;
+    m_cellSize = cellSize;
+
+    m_grid.clear();
+
+    for (int row = 0; row < m_rows; ++row)
+    {
+        for (int col = 0; col < m_cols; ++col)
+        {
+            GridCell cell;
+            cell.row = row;
+            cell.col = col;
+            cell.gridIndex = row * m_cols + col;
+            cell.worldPos = glm::vec2(col * m_cellSize, row * m_cellSize);
+            cell.tileID = -1;
+
+            m_grid.push_back(cell);
+
+            // call DrawGridObj for the cell you just made
+            ValidateGridCell(&m_grid.back(), row, col);
+        }
+    }
+}
+
+void App::ValidateGridCell(GridCell* cell, int row, int col)
+{
+    if (!cell) return;
+
+    if (row < 0 || row >= m_rows || col < 0 || col >= m_cols)
+    {
+        LOG_ERROR("Grid cell out of bounds: row " << row << ", col " << col);
+        return;
+    }
+
+    LOG_INFO("Grid cell created: row " << row
+        << ", col " << col
+        << ", index " << cell->gridIndex
+        << ", worldPos (" << cell->worldPos.x << ", " << cell->worldPos.y << ")");
+}
+
+void App::DrawGrid(GridCell* cell, float cellSize, ImVec2 m_imagePos)
+{
+   
+    if (!cell) return;
+
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    // Convert world position ? screen position
+    float x = m_imagePos.x + cell->col * cellSize;
+    float y = m_imagePos.y + cell->row * cellSize;
+
+    ImVec2 p_min = ImVec2(x, y);
+    ImVec2 p_max = ImVec2(x + cellSize, y + cellSize);
+
+    draw_list->AddRect(
+        p_min,
+        p_max,
+        IM_COL32(0, 255, 0, 100) // light grey grid lines
+    );
+
+}
+
+
+
 void App::AddPlane(const glm::vec3& pos)
 {
-   /* if (!m_entity) return;
-    m_entity->CreatePlane(m_entities, m_currentEntityIndex, m_planeObjIdx, pos);
-    m_selectedEntityIndex = static_cast<int>(m_entities.size()) - 1;
-    ImGui::SetWindowFocus("Object Inspector");*/
+
     int newId = static_cast<int>(m_entities.size());
     int planeObjIdx = 0;
 
@@ -162,19 +364,19 @@ void App::AddPlane(const glm::vec3& pos)
             ++planeObjIdx;
     }
 
-    auto plane = std::make_unique<PlaneModel>(newId, "Tile", planeObjIdx);
+    auto plane = std::make_unique<PlaneModel>(newId, "Plane Tile", planeObjIdx);
     plane->position = pos;
 
     m_entities.push_back(std::move(plane));
 
     LOG_INFO("Added Plane/Tile. Total entities: " << m_entities.size());
 
-
 }
 
 void App::AppShutdown()
 {
     LOG_INFO("Shutting down application");
+	m_entities.clear(); // clear entities to release resources (optional, as unique_ptr will handle this)
     glfwTerminate(); // single place to call glfwTerminate
 }
 
