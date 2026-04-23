@@ -79,6 +79,11 @@ int App::RunApp()
     {
         SetActionCallback(cmd);
     };
+
+    windowManager.m_gridDrawCallback = [this](ImVec2 m_imagePos)
+    {
+        DrawGrid(m_imagePos);
+    };
     // ################################################# New bit ################################
 
     bool showGUI = true;
@@ -269,11 +274,7 @@ int App::RunApp()
 		windowManager.MainWindow(window); // set up main ImGui window for OpenGL rendering (optional)
 		windowManager.MainMenuBar(window); // set up main menu bar (optional)
 
-        for (auto& cell : m_grid)
-        {
-            DrawGrid(&cell, m_cellSize, m_imagePos);
-        }
-
+        
 		windowManager.ImGuiRender(window); // render ImGui (optional)
 
         // Swap and poll
@@ -328,25 +329,26 @@ void App::ValidateGridCell(GridCell* cell, int row, int col)
         << ", worldPos (" << cell->worldPos.x << ", " << cell->worldPos.y << ")");
 }
 
-void App::DrawGrid(GridCell* cell, float cellSize, ImVec2 m_imagePos)
+
+void App::DrawGrid(ImVec2 m_imagePos)
 {
-   
-    if (!cell) return;
-
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    if (!draw_list) return;
 
-    // Convert world position ? screen position
-    float x = m_imagePos.x + cell->col * cellSize;
-    float y = m_imagePos.y + cell->row * cellSize;
+    for (auto& cell : m_grid)
+    {
+        float x = m_imagePos.x + cell.col * m_cellSize;
+        float y = m_imagePos.y + cell.row * m_cellSize;
 
-    ImVec2 p_min = ImVec2(x, y);
-    ImVec2 p_max = ImVec2(x + cellSize, y + cellSize);
+        ImVec2 p_min(x, y);
+        ImVec2 p_max(x + m_cellSize, y + m_cellSize);
 
-    draw_list->AddRect(
-        p_min,
-        p_max,
-        IM_COL32(0, 255, 0, 100) // light grey grid lines
-    );
+        draw_list->AddRect(
+            p_min,
+            p_max,
+            IM_COL32(200, 200, 200, 120)
+        );
+    }
 
 }
 

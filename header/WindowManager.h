@@ -1,6 +1,7 @@
 #pragma once
 #include "glad/glad.h" // include the glad header file
 #include "GLFW/glfw3.h" // include the GLFW header file
+#include "imgui/imgui.h" // include the ImGui header file
 #include <functional> // for std::function
 #include <string>
 
@@ -8,7 +9,7 @@
 
 constexpr int SCR_WIDTH = 800;
 constexpr int SCR_HEIGHT = 600;
-constexpr const char* TITLE = "Add ImGui Viewport"; // Change the project to a 2d Platform Editor 
+constexpr const char* TITLE = "Add Viewport Grid"; // Change the project to a 2d Platform Editor 
 constexpr const char* ICON_PATH = "textures/github.jpg"; // new
 
 
@@ -18,6 +19,8 @@ class WindowManager
 public:
 	using RenderCallback = std::function<void()>; // called while FBO is bound so we can render into it
 	using ActionCallback = std::function<void(const std::string&)>; // called when UI requests an action
+	using GridDrawCallback = std::function<void(ImVec2)>;
+	
 
 
 	// Constructor and Destructor												house keeping functions
@@ -48,6 +51,7 @@ public:
 
 	RenderCallback m_renderCallback = nullptr;
 	ActionCallback m_actionCallback = nullptr;
+	GridDrawCallback m_gridDrawCallback = nullptr;
 
 	// ################################################### End New functions for framebuffer management ######################
 

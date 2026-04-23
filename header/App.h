@@ -3,6 +3,7 @@
 #include "GLFW\glfw3.h"
 #include <vector>
 #include <memory>
+
 #include "Entity.h"
 #include <imgui/imgui.h>
 
@@ -18,23 +19,25 @@ struct GridCell {
 
 class App {
 public:
+    
+
     // Returns a pointer to a single App instance (simple singleton).
     static App* Instance();
+	// Set the callback for UI actions (e.g. menu selections) add all game objects
     void SetActionCallback(const std::string& cmd);
     // Run the application (initializes subsystems, enters render loop).
     int RunApp();
 	// Editor grid creation and validation and draw
 	void AddGrid(int rows, int cols, float cellSize);
     void ValidateGridCell(GridCell* cell, int row, int col);
-    void DrawGrid(GridCell* cell, float cellSize, ImVec2 m_imagePos); // draw the grid lines 
+    // void DrawGrid(GridCell* cell, float cellSize, ImVec2 m_imagePos); // draw the grid lines 
+    void DrawGrid(ImVec2 m_imagePos);
 
-
+	// add a plane to the scene at the given position (default is origin) later we can put it in grid cells and snap to grid etc
     void AddPlane(const glm::vec3& pos = glm::vec3(0.0f));
 
     // Shutdown and cleanup (called automatically from RunApp before exit).
     void AppShutdown();
-
-  
 
 private:
     App() = default;
@@ -49,8 +52,8 @@ private:
     // Editor Grid
 	int m_rows = 10;
 	int m_cols = 12;
-	float m_cellSize = 32.0f;
-    ImVec2 m_imagePos; // top-left corner of the grid in screen coordinates, used for drawing the grid lines
+	float m_cellSize = 64.0f;
+   
 	std::vector<GridCell> m_grid;
 
     //std::unique_ptr<App> m_entity;

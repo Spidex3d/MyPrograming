@@ -4,6 +4,7 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"   
 #include "stb/stb_image.h"
+#include "../header/App.h"
 
 
 // ################################################################## Helper #####################################
@@ -194,11 +195,16 @@ void WindowManager::MainWindow(GLFWwindow* window)
         // Done rendering to FBO
         Unbinde_Frambuffer();
 
-
+        ImVec2 imagePos = ImGui::GetCursorScreenPos();
 
         ImGui::Image((void*)(intptr_t)m_fboViewPortTexture,
             ImVec2(window_width, window_height),
             ImVec2(0, 1), ImVec2(1, 0)); // uv0, uv1 flipped for GL
+
+        // draw overlay here, in the same window, after Image()
+        if (m_gridDrawCallback) {
+            m_gridDrawCallback(imagePos);
+        }
 
     }
     else {
