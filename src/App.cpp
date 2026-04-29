@@ -26,7 +26,7 @@ void App::SetActionCallback(const std::string& cmd)
 
     if (cmd == "AddTile") {
 		// place at center by default later set to a grid square under mouse cursor
-        AddPlane(glm::vec3(0.0f, 0.0f, 0.0f));
+        AddPlane(glm::vec2(0.0f, 0.0f));
     }
    
 }
@@ -335,6 +335,39 @@ void App::DrawGrid(ImVec2 m_imagePos)
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     if (!draw_list) return;
 
+    ImVec2 mousePos = ImGui::GetMousePos();
+
+    for (auto& cell : m_grid)
+    {
+        float x = m_imagePos.x + cell.col * m_cellSize;
+        float y = m_imagePos.y + cell.row * m_cellSize;
+
+        ImVec2 p_min(x, y);
+        ImVec2 p_max(x + m_cellSize, y + m_cellSize);
+
+        bool hovered =
+            mousePos.x >= p_min.x && mousePos.x < p_max.x &&
+            mousePos.y >= p_min.y && mousePos.y < p_max.y;
+
+        if (hovered)
+        {
+            draw_list->AddRectFilled(
+                p_min,
+                p_max,
+                IM_COL32(255, 255, 0, 60)
+            );
+        }
+
+        draw_list->AddRect(
+            p_min,
+            p_max,
+            IM_COL32(200, 200, 200, 120)
+        );
+    }
+
+    /*ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    if (!draw_list) return;
+
     for (auto& cell : m_grid)
     {
         float x = m_imagePos.x + cell.col * m_cellSize;
@@ -348,13 +381,13 @@ void App::DrawGrid(ImVec2 m_imagePos)
             p_max,
             IM_COL32(200, 200, 200, 120)
         );
-    }
+    }*/
 
 }
 
 
 
-void App::AddPlane(const glm::vec3& pos)
+void App::AddPlane(const glm::vec2& pos)
 {
 
     int newId = static_cast<int>(m_entities.size());

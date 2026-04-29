@@ -34,7 +34,7 @@ public:
     void DrawGrid(ImVec2 m_imagePos);
 
 	// add a plane to the scene at the given position (default is origin) later we can put it in grid cells and snap to grid etc
-    void AddPlane(const glm::vec3& pos = glm::vec3(0.0f));
+    void AddPlane(const glm::vec2& pos = glm::vec2(0.0f));
 
     // Shutdown and cleanup (called automatically from RunApp before exit).
     void AppShutdown();

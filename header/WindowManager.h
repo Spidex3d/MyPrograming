@@ -21,8 +21,6 @@ public:
 	using ActionCallback = std::function<void(const std::string&)>; // called when UI requests an action
 	using GridDrawCallback = std::function<void(ImVec2)>;
 	
-
-
 	// Constructor and Destructor												house keeping functions
     WindowManager(int width = SCR_WIDTH, int height = SCR_HEIGHT, const char* title = TITLE);
     ~WindowManager();
