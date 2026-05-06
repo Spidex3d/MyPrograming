@@ -1,6 +1,7 @@
 #include "../header/Entity.h"
 #include "../header/log.h"
 #include <iostream>
+#include "../header/App.h"
 
 Entity::Entity()
 {
@@ -34,14 +35,6 @@ bool Entity::Initialize(GLFWwindow* window)
     }
     shader->Use();
     shader->SetUniformInt("myTexture", 0); // bind sampler to texture unit 0 once
-
-    // Load texture once
-    texture = new Texture("textures/github.jpg");
-    if (!texture->IsLoaded()) {
-        LOG_WARNING("Failed to load texture");
-        // continue anyway — shader will sample black/undefined but app not crash
-    }
-    LOG_INFO("Texture loaded successfully with ID: " << texture->ID());
 
     
 	// if we reach here, initialization has succeeded

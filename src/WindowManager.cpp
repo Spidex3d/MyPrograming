@@ -212,8 +212,6 @@ void WindowManager::MainWindow(GLFWwindow* window)
         ImGui::TextWrapped("Frame buffer not initialized.");
     }
 
-
-
 	// ################################### Detect right-click for popup menu (existing UI code) ##########################
     if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {

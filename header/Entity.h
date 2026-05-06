@@ -46,10 +46,13 @@ struct GameObj { // Any Editor object name change from gameObj
     // used for complex models that have their own materials/textures (like gltf/obj models) but can be applied to them as a single texture
     // if desired (e.g. for quick testing or if the model is untextured)
 
-    //std::string entType;    // e.g. "Cube", "Plane", "Floor", "Obj", "Gltf", "Skybox"
-    std::string assetPath;  // optional: path to model  "Obj", "Gltf", "Skybox" file used to create this entity
+    //std::string entType;    
+    std::string assetPath;  // optional: path to tile
 
 };
+
+//constexpr const char* TILE_PATH = "textures/Grass_01.png"; // This is just temp
+
 class Entity {
 public:
     Entity();
@@ -98,10 +101,10 @@ public:
         entTypeID = OBJ_PLANE; // from globalVar.h = 2
 
         // default transform
-        position = glm::vec2(0.0f);
+        /*position = glm::vec2(0.0f);
         scale = glm::vec2(1.0f);
         rotation = glm::vec3(0.0f);
-        modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::mat4(1.0f);*/
 
 
         float vertices[] = {

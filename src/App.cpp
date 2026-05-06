@@ -26,7 +26,11 @@ void App::SetActionCallback(const std::string& cmd)
 
     if (cmd == "AddTile") {
 		// place at center by default later set to a grid square under mouse cursor
-        AddPlane(glm::vec2(0.0f, 0.0f));
+       // AddPlane(glm::vec2(0.0f, 0.0f));
+        if (m_hoveredIndex >= 0 && m_hoveredIndex < m_grid.size())
+        {
+            m_grid[m_hoveredIndex].tileID = 1;
+        }
     }
    
 }
@@ -53,6 +57,21 @@ int App::RunApp()
     if (!window) {
         LOG_ERROR("WindowManager returned null window");
         return -1;
+    }
+
+	// ######################################## Add Tile Texture ########################################
+
+    m_tileTexture = std::make_unique<Texture>(TILE_PATH);
+
+    if (!m_tileTexture || !m_tileTexture->IsLoaded())
+    {
+        LOG_WARNING("Failed to load editor tile texture");
+        m_tileTextureID = 0;
+    }
+    else
+    {
+        m_tileTextureID = m_tileTexture->ID();
+        LOG_INFO("Editor tile texture loaded with ID: " << m_tileTextureID);
     }
 
     // Create and initialize an entity (creates shader, mesh & texture just once)
@@ -225,6 +244,8 @@ int App::RunApp()
                 ImGui::Text("No object selected");
             }
 
+            
+
             ImGui::End();
         }
         // ################################################ End object editor ###############################
@@ -232,6 +253,7 @@ int App::RunApp()
 
         
 
+        // ################################################ Scene Collection ###############################
 
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse; // Set ImGui window flags (optional) 
 		//ImGuiWindowFlags window_flags = ImGuiWindowFlags_None; // Set ImGui window flags (optional) 
@@ -270,6 +292,9 @@ int App::RunApp()
             }    
             ImGui::End(); // end the ImGui window (optional)
         }
+        // ################################################ End Scene Collection ###############################
+
+
         // ################################################## Dont forget to call this #################################
 		windowManager.MainWindow(window); // set up main ImGui window for OpenGL rendering (optional)
 		windowManager.MainMenuBar(window); // set up main menu bar (optional)
@@ -307,26 +332,9 @@ void App::AddGrid(int rows, int cols, float cellSize)
 
             m_grid.push_back(cell);
 
-            // call DrawGridObj for the cell you just made
-            ValidateGridCell(&m_grid.back(), row, col);
+           
         }
     }
-}
-
-void App::ValidateGridCell(GridCell* cell, int row, int col)
-{
-    if (!cell) return;
-
-    if (row < 0 || row >= m_rows || col < 0 || col >= m_cols)
-    {
-        LOG_ERROR("Grid cell out of bounds: row " << row << ", col " << col);
-        return;
-    }
-
-    LOG_INFO("Grid cell created: row " << row
-        << ", col " << col
-        << ", index " << cell->gridIndex
-        << ", worldPos (" << cell->worldPos.x << ", " << cell->worldPos.y << ")");
 }
 
 
@@ -337,6 +345,32 @@ void App::DrawGrid(ImVec2 m_imagePos)
 
     ImVec2 mousePos = ImGui::GetMousePos();
 
+    m_hoveredRow = -1;
+    m_hoveredCol = -1;
+    m_hoveredIndex = -1;
+
+    // 1. Draw placed tile images first
+    if (m_tileTextureID != 0)
+    {
+        for (auto& cell : m_grid)
+        {
+            if (cell.tileID == -1)
+                continue;
+
+            float x = m_imagePos.x + cell.col * m_cellSize;
+            float y = m_imagePos.y + cell.row * m_cellSize;
+
+            draw_list->AddImage(
+                (ImTextureID)(intptr_t)m_tileTextureID,
+                ImVec2(x, y),
+                ImVec2(x + m_cellSize, y + m_cellSize),
+                ImVec2(0, 1),
+                ImVec2(1, 0)
+            );
+        }
+    }
+
+    // 2. Draw grid lines and hover highlight
     for (auto& cell : m_grid)
     {
         float x = m_imagePos.x + cell.col * m_cellSize;
@@ -351,6 +385,10 @@ void App::DrawGrid(ImVec2 m_imagePos)
 
         if (hovered)
         {
+            m_hoveredCol = cell.col;
+            m_hoveredRow = cell.row;
+            m_hoveredIndex = cell.gridIndex;
+
             draw_list->AddRectFilled(
                 p_min,
                 p_max,
@@ -365,28 +403,10 @@ void App::DrawGrid(ImVec2 m_imagePos)
         );
     }
 
-    /*ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    if (!draw_list) return;
-
-    for (auto& cell : m_grid)
-    {
-        float x = m_imagePos.x + cell.col * m_cellSize;
-        float y = m_imagePos.y + cell.row * m_cellSize;
-
-        ImVec2 p_min(x, y);
-        ImVec2 p_max(x + m_cellSize, y + m_cellSize);
-
-        draw_list->AddRect(
-            p_min,
-            p_max,
-            IM_COL32(200, 200, 200, 120)
-        );
-    }*/
-
 }
 
 
-
+// this is the tile 
 void App::AddPlane(const glm::vec2& pos)
 {
 
@@ -399,12 +419,12 @@ void App::AddPlane(const glm::vec2& pos)
             ++planeObjIdx;
     }
 
-    auto plane = std::make_unique<PlaneModel>(newId, "Plane Tile", planeObjIdx);
+    auto plane = std::make_unique<PlaneModel>(newId, "Tile", planeObjIdx);
     plane->position = pos;
 
     m_entities.push_back(std::move(plane));
 
-    LOG_INFO("Added Plane/Tile. Total entities: " << m_entities.size());
+    LOG_INFO("Added Tile. Total entities: " << m_entities.size());
 
 }
 
