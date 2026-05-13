@@ -6,6 +6,7 @@
 #include "../header/shader.h"
 #include "../header/Texture.h"
 
+
 struct GameObj { // Any Editor object name change from gameObj
 
     virtual ~GameObj() = default; // make polymorphic for safe dynamic_cast
@@ -87,7 +88,44 @@ private:
 };
 
 const int OBJ_PLANE = 2; 
+const int OBJ_TILE = 10;
 
+class TileObj : public GameObj
+{
+public:
+    int row = 0;
+    int col = 0;
+    int gridIndex = -1;
+
+    float width = 64.0f;
+    float height = 64.0f;
+
+    bool hasCollision = true;
+    bool isSolid = true;
+
+    int tileID = 1;
+
+    TileObj(int id, const std::string& name, int row_, int col_, int gridIndex_, float cellSize)
+    {
+        entId = id;
+        entName = name;
+        entTypeID = OBJ_TILE;
+
+        row = row_;
+        col = col_;
+        gridIndex = gridIndex_;
+
+        width = cellSize;
+        height = cellSize;
+
+        position = glm::vec3(col * cellSize, row * cellSize, 0.0f);
+        scale = glm::vec3(cellSize, cellSize, 1.0f);
+
+        hasCollision = true;
+        isSolid = true;
+        tileID = 1;
+    }
+};
 
 class PlaneModel : public GameObj {
 

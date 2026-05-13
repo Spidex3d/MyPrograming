@@ -27,11 +27,14 @@ void App::SetActionCallback(const std::string& cmd)
     if (cmd == "AddTile") {
 		// place at center by default later set to a grid square under mouse cursor
        // AddPlane(glm::vec2(0.0f, 0.0f));
-        if (m_hoveredIndex >= 0 && m_hoveredIndex < m_grid.size())
+
+        AddTileAtHoveredCell();
+
+        /*if (m_hoveredIndex >= 0 && m_hoveredIndex < m_grid.size())
         {
             m_grid[m_hoveredIndex].tileID = 1;
-        }
-    }
+        }*/
+    } // Now go to line 64 App.cpp
    
 }
 
@@ -354,7 +357,9 @@ void App::DrawGrid(ImVec2 m_imagePos)
     {
         for (auto& cell : m_grid)
         {
-            if (cell.tileID == -1)
+            /*if (cell.tileID == -1)
+                continue;*/
+            if (cell.entityIndex == -1)
                 continue;
 
             float x = m_imagePos.x + cell.col * m_cellSize;
@@ -403,6 +408,41 @@ void App::DrawGrid(ImVec2 m_imagePos)
         );
     }
 
+}
+
+void App::AddTileAtHoveredCell()
+{
+    if (m_hoveredIndex < 0 || m_hoveredIndex >= (int)m_grid.size())
+        return;
+
+    GridCell& cell = m_grid[m_hoveredIndex];
+
+    // Do not place another tile if this cell already has one
+    if (cell.entityIndex != -1)
+        return;
+
+    int newId = static_cast<int>(m_entities.size());
+
+    std::string name = "Tile " + std::to_string(newId);
+
+    auto tile = std::make_unique<TileObj>(
+        newId,
+        name,
+        cell.row,
+        cell.col,
+        cell.gridIndex,
+        m_cellSize
+    );
+
+    cell.tileID = 1;
+    cell.entityIndex = newId;
+
+    m_entities.push_back(std::move(tile));
+
+    LOG_INFO("Added tile object: " << name
+        << " row: " << cell.row
+        << " col: " << cell.col
+        << " index: " << cell.gridIndex);
 }
 
 

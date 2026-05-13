@@ -14,6 +14,7 @@ struct GridCell {
 	int gridIndex = 0; // index to the grid object in the model manager
 	glm::vec2 worldPos = glm::vec2(0.0f); // world position of the cell center, used for placing objects on the grid
 	int tileID = -1; // optional: ID of the tile occupying this cell, -1 if empty
+	int entityIndex = -1; // optional: ID of the entity occupying this cell, -1 if empty
     bool isOccupied = false;
 };
 
@@ -35,6 +36,8 @@ public:
    
     // void DrawGrid(GridCell* cell, float cellSize, ImVec2 m_imagePos); // draw the grid lines 
     void DrawGrid(ImVec2 m_imagePos);
+
+    void AddTileAtHoveredCell();
 
 	// add a plane to the scene at the given position (default is origin) later we can put it in grid cells and snap to grid etc
     void AddPlane(const glm::vec2& pos = glm::vec2(0.0f));
@@ -66,10 +69,12 @@ private:
     int m_hoveredCol = -1;
     int m_hoveredIndex = -1;
    
-    // ADD TEXTURE.h up top
+   
+	// this code dose what? it creates a unique pointer to a Texture object and initializes it to nullptr.
     std::unique_ptr<Texture> m_tileTexture = nullptr;
     GLuint m_tileTextureID = 0;
-   
+    
+
 	std::vector<GridCell> m_grid;
 
     //std::unique_ptr<App> m_entity;
