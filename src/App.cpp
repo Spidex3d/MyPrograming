@@ -390,42 +390,34 @@ void App::DeleteSelectedEntity()
     if (m_selectedEntityIndex < 0 || m_selectedEntityIndex >= (int)m_entities.size())
         return;
 
-    GameObj* obj = m_entities[m_selectedEntityIndex].get();
+    int deletedIndex = m_selectedEntityIndex;
+
+    GameObj* obj = m_entities[deletedIndex].get();
     if (!obj)
         return;
 
-    // If this object is a tile, clear its grid cell first
     if (TileObj* tile = dynamic_cast<TileObj*>(obj))
     {
         if (tile->gridIndex >= 0 && tile->gridIndex < (int)m_grid.size())
         {
             GridCell& cell = m_grid[tile->gridIndex];
-
             cell.tileID = -1;
             cell.entityIndex = -1;
-
-            LOG_INFO("Cleared grid cell: row "
-                << cell.row
-                << ", col "
-                << cell.col
-                << ", index "
-                << cell.gridIndex);
         }
     }
 
-    // Remove object from scene list
-    m_entities.erase(m_entities.begin() + m_selectedEntityIndex);
+    m_entities.erase(m_entities.begin() + deletedIndex);
 
-    // Important: fix entityIndex references after erase
     for (auto& cell : m_grid)
     {
-        if (cell.entityIndex > m_selectedEntityIndex)
+        if (cell.entityIndex > deletedIndex)
         {
             cell.entityIndex--;
         }
     }
 
     m_selectedEntityIndex = -1;
+    
 }
 
 
