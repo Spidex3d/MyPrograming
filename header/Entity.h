@@ -100,6 +100,7 @@ public:
     float width = 64.0f;
     float height = 64.0f;
 
+	bool isCollectable = false;
     bool hasCollision = true;
     bool isSolid = true;
 
@@ -121,6 +122,7 @@ public:
         position = glm::vec3(col * cellSize, row * cellSize, 0.0f);
         scale = glm::vec3(cellSize, cellSize, 1.0f);
 
+		isCollectable = false;
         hasCollision = true;
         isSolid = true;
         tileID = 1;

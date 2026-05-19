@@ -38,6 +38,7 @@ public:
     void DrawGrid(ImVec2 m_imagePos);
 
     void AddTileAtHoveredCell();
+    void DeleteSelectedEntity();
 
 	// add a plane to the scene at the given position (default is origin) later we can put it in grid cells and snap to grid etc
     void AddPlane(const glm::vec2& pos = glm::vec2(0.0f));

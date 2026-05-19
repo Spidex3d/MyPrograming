@@ -125,130 +125,69 @@ int App::RunApp()
         
         // ############################## object editor ###############################
         if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < (int)m_entities.size()) {
+           
             ImGui::Begin("Object Inspector");
+            GameObj* obj = m_entities[m_selectedEntityIndex].get();
 
-            if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < (int)m_entities.size()) {
-                GameObj* selected = m_entities[m_selectedEntityIndex].get();
-                if (selected) {
-                    // Name / rename
-                    char nameBuf[128];
-                    //strncpy(nameBuf, selected->entName.c_str(), sizeof(nameBuf));
-                    strncpy_s(nameBuf, selected->entName.c_str(), sizeof(nameBuf));
-                    nameBuf[sizeof(nameBuf) - 1] = '\0';
-                    if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
-                        selected->entName = std::string(nameBuf);
-                    }
-                  //  ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT "  Editor");
-                    // Position
-                    float pos[3] = { selected->position.x, selected->position.y};
-                    if (ImGui::InputFloat2("Position", pos)) {
-                        selected->position = glm::vec2(pos[0], pos[1]);
-                    }
-
-                    // Rotation (Euler degrees for editing)
-                    // store rotation in radians or degrees depending on your representation, this example uses degrees
-                    /*float rotDeg[3] = {
-                        glm::degrees(selected->rotation.x),
-                        glm::degrees(selected->rotation.y),
-                        glm::degrees(selected->rotation.z)
-                    };*/
-                    /*if (ImGui::InputFloat3("Rotation (deg)", rotDeg)) {
-                        selected->rotation = glm::vec3(glm::radians(rotDeg[0]), glm::radians(rotDeg[1]), glm::radians(rotDeg[2]));
-                    }*/
-
-                    // Scale
-                    float sc[2] = { selected->scale.x, selected->scale.y };
-                    if (ImGui::InputFloat2("Scale", sc)) {
-                        selected->scale = glm::vec2(sc[0], sc[1]);
-                    }
-
-                    // Update modelMatrix using TRS (make sure order is correct for your math)
-                   // selected->modelMatrix = glm::translate(glm::mat4(1.0f), selected->position);
-                    // apply rotation (if you use Euler -> convert to quat / rotate)
-                   // selected->modelMatrix = glm::rotate(selected->modelMatrix, selected->rotation.x, glm::vec3(1, 0, 0));
-                   /// selected->modelMatrix = glm::rotate(selected->modelMatrix, selected->rotation.y, glm::vec3(0, 1, 0));
-                    //selected->modelMatrix = glm::rotate(selected->modelMatrix, selected->rotation.z, glm::vec3(0, 0, 1));
-                   //selected->modelMatrix = glm::scale(selected->modelMatrix, selected->scale);
-
-                    ImGui::SeparatorText("Scene Properties");
-                    ImGui::Text("Gameplay Properties");
-                    //ImGui::InputInt("Points", &selected->entPoints);
-                    //if (ImGui::Checkbox("Active", &selected->isActive)) { /* optionally handle enable/disable */ }
-                    //if (ImGui::Checkbox("Rotate Y", &selected->isRotateY)) {
-                        // toggling rotateY will cause the object to start/stop rotating in the render loop
-                      //  selected->isRotateY = selected->isRotateY; // just to emphasize the change happens immediately
-                   // }
-                    //if (ImGui::Checkbox("Health Pack", &selected->isHealthPack)) {
-                        // show health points input only if flagged
-                    //}
-                    //if (selected->isHealthPack) {
-                     //   ImGui::InputInt("Health Pack Points", &selected->HealthPackPoints);
-                    //}
-                    //ImGui::Checkbox("Dangerous", &selected->isDangerous);
-                    //ImGui::Checkbox("Collidable", &selected->isCollidable);
-                    if (ImGui::Checkbox("Visible", &selected->isVisible)) {
-                        // toggling visible will affect rendering next frame
-                    }
-
-                    ImGui::SeparatorText("Texture on selected object");
-
-                    // show path or "None"
-                    if (!selected->texPath.empty()) {
-                        ImGui::TextWrapped("Path: %s", selected->texPath.c_str());
-                    }
-                    else {
-                        ImGui::Text("Texture: None");
-                    }
-
-                    // Preview (if texture present)
-                    if (selected->tex_ID != 0) {
-                        ImGui::Text("Preview:");
-                        ImGui::Image((void*)(intptr_t)selected->tex_ID, ImVec2(128, 128));
-
-                    }
-
-                    // Change texture button
-                    if (ImGui::Button("Change Texture")) {
-                        // Blocking Win32 dialog - returns UTF-8 path (your openFileDialog returns std::string)
-                        std::string path;
-                        if (window) {
-                           // path = window->openFileDialog();
+            if (obj) {
+                        // Name / rename
+                        char nameBuf[128];
+                        //strncpy(nameBuf, selected->entName.c_str(), sizeof(nameBuf));
+                        strncpy_s(nameBuf, obj->entName.c_str(), sizeof(nameBuf));
+                        nameBuf[sizeof(nameBuf) - 1] = '\0';
+                        if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
+                            obj->entName = std::string(nameBuf);
                         }
-
-                        if (!path.empty()) {
-                           /* if (!m_entity->SetTextureForGameObj(selected, path)) {
-                                LOG_WARNING("Failed to set texture for entity " << selected->entId);
-                            }*/
-                        }
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Clear Texture")) {
-                        // Clear/unload texture
-                       // m_entity->SetTextureForGameObj(selected, "");
-                    }
-
-                    // Buttons for convenience
-                    if (ImGui::Button("Focus")) {
-                        // implement camera focus in future: center camera on selected->position
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Delete")) {
-                        m_entities.erase(m_entities.begin() + m_selectedEntityIndex);
-                        m_selectedEntityIndex = -1;
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Exit")) {
-                        // close object inspector - editor
-                        m_selectedEntityIndex = -1;
-                    }
-                }
             }
-            else {
-                ImGui::Text("No object selected");
+
+            if (m_selectedEntityIndex < 0 || m_selectedEntityIndex >= (int)m_entities.size())
+            {
+                ImGui::Text("No object selected.");
+                ImGui::End();
+                return 0;
+            }
+
+            if (!obj)
+            {
+                ImGui::Text("Invalid object.");
+                ImGui::End();
+                return 0;
+            }
+
+            if (TileObj* tile = dynamic_cast<TileObj*>(obj))
+            {
+           
+            ImGui::SeparatorText("Tile Grid Info");
+            ImGui::Text("Tile ID: %d", obj->entId);
+			ImGui::Text("Tile Type ID: %d", obj->entTypeID); // Ground / Water etc
+            ImGui::Text("Tile Row: %d", tile->row);
+            ImGui::Text("Tile Col: %d", tile->col);
+            ImGui::Text("Tile Grid Index: %d", tile->gridIndex);
+            ImGui::Separator();
+            ImGui::DragFloat3("Position", &obj->position.x, 1.0f);
+            ImGui::DragFloat3("Scale", &obj->scale.x, 1.0f);
+            ImGui::DragFloat("Width", &tile->width, 1.0f);
+            ImGui::DragFloat("Height", &tile->height, 1.0f);
+            
+            ImGui::SeparatorText("Tile Properties...");               
+
+			ImGui::Checkbox("Visible", &obj->isVisible); // toggle rendering of this tile in the render loop
+			ImGui::Checkbox("Is Collectable", &tile->isCollectable); // can be collected by player for points or powerups etc
+            ImGui::Checkbox("Has Collision", &tile->hasCollision);
+			ImGui::Checkbox("Solid", &tile->isSolid); // Land / Water etc
+                            
+            }
+           
+            if (ImGui::Button("Delete")) {
+                DeleteSelectedEntity();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Exit")) {
+                // close object inspector - editor
+                m_selectedEntityIndex = -1;
             }
 
             
-
             ImGui::End();
         }
         // ################################################ End object editor ###############################
@@ -279,9 +218,10 @@ int App::RunApp()
                //const char* visibilityIcon = obj->isVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
 
                // display name + id with icon prefix, keep unique ID suffix
-                std::string displayName = obj->entName.empty() ? ("Entity " + std::to_string(obj->entId)) : obj->entName;
-                std::string label = std::string(displayName + "##" + std::to_string(obj->entId));
-                //std::string label = std::string(displayName) + " " + visibilityIcon + "##" + std::to_string(obj->entId);
+               // std::string displayName = obj->entName.empty() ? ("Entity " + std::to_string(obj->entId)) : obj->entName;
+               // std::string label = std::string(displayName + "##" + std::to_string(obj->entId));
+                std::string label = std::string(obj->entName);
+           
 
                 // render the tree node (leaf)
                 ImGui::TreeNodeEx(label.c_str(), node_flags);
@@ -357,8 +297,7 @@ void App::DrawGrid(ImVec2 m_imagePos)
     {
         for (auto& cell : m_grid)
         {
-            /*if (cell.tileID == -1)
-                continue;*/
+          
             if (cell.entityIndex == -1)
                 continue;
 
@@ -409,7 +348,7 @@ void App::DrawGrid(ImVec2 m_imagePos)
     }
 
 }
-
+// this is the tile 
 void App::AddTileAtHoveredCell()
 {
     if (m_hoveredIndex < 0 || m_hoveredIndex >= (int)m_grid.size())
@@ -423,7 +362,8 @@ void App::AddTileAtHoveredCell()
 
     int newId = static_cast<int>(m_entities.size());
 
-    std::string name = "Tile " + std::to_string(newId);
+   // std::string name = "Tile " + std::to_string(newId);
+    std::string name = "Tile ";
 
     auto tile = std::make_unique<TileObj>(
         newId,
@@ -444,9 +384,52 @@ void App::AddTileAtHoveredCell()
         << " col: " << cell.col
         << " index: " << cell.gridIndex);
 }
+// Delete the currently selected entity - tile.
+void App::DeleteSelectedEntity()
+{
+    if (m_selectedEntityIndex < 0 || m_selectedEntityIndex >= (int)m_entities.size())
+        return;
+
+    GameObj* obj = m_entities[m_selectedEntityIndex].get();
+    if (!obj)
+        return;
+
+    // If this object is a tile, clear its grid cell first
+    if (TileObj* tile = dynamic_cast<TileObj*>(obj))
+    {
+        if (tile->gridIndex >= 0 && tile->gridIndex < (int)m_grid.size())
+        {
+            GridCell& cell = m_grid[tile->gridIndex];
+
+            cell.tileID = -1;
+            cell.entityIndex = -1;
+
+            LOG_INFO("Cleared grid cell: row "
+                << cell.row
+                << ", col "
+                << cell.col
+                << ", index "
+                << cell.gridIndex);
+        }
+    }
+
+    // Remove object from scene list
+    m_entities.erase(m_entities.begin() + m_selectedEntityIndex);
+
+    // Important: fix entityIndex references after erase
+    for (auto& cell : m_grid)
+    {
+        if (cell.entityIndex > m_selectedEntityIndex)
+        {
+            cell.entityIndex--;
+        }
+    }
+
+    m_selectedEntityIndex = -1;
+}
 
 
-// this is the tile 
+// this was the tile 
 void App::AddPlane(const glm::vec2& pos)
 {
 
